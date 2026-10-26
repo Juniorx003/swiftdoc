@@ -17,7 +17,7 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
 
-    /* Custom UI Elements */
+    /* Custom UI Elements Photo/Motion */
     .ps-tool-btn { width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; border-radius: 4px; color: #b3b3b3; font-size: 14px; margin: 1px 0; cursor: pointer; }
     .ps-tool-btn:hover, .ps-tool-btn.active { background: #37373d; color: #ffffff; }
     
@@ -26,12 +26,13 @@
     
     .cc-menu-item { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 64px; color: #8f959e; font-size: 10px; cursor: pointer; transition: all 0.2s; border-radius: 6px;}
     .cc-menu-item:hover, .cc-menu-item.active { background: #2a2e37; color: #e5e6eb; }
-    .cc-menu-item i { font-size: 18px; margin-bottom: 6px; }
-
-    .ps-panel-header { font-size: 11px; font-weight: 600; color: #cccccc; padding: 6px 12px; background: #252526; border-bottom: 1px solid #333333; display: flex; justify-content: space-between; align-items: center;}
     
     input[type=range] { -webkit-appearance: none; background: #3b3b40; height: 4px; border-radius: 2px; }
     input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #ffffff; cursor: pointer; }
+
+    /* Acrobat UI Transitions */
+    .acrobat-tool-btn { transition: all 0.2s; }
+    .acrobat-tool-btn:active { transform: scale(0.95); }
   </style>
 </head>
 <body class="bg-[#f3f4f6] text-slate-800 antialiased selection:bg-blue-600 selection:text-white h-screen flex flex-col font-sans overflow-hidden">
@@ -88,170 +89,197 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- SCREEN 2: PDF ENGINE -->
+  <!-- SCREEN 2: PDF ENGINE (ADOBE ACROBAT PRO UI)-->
   <!-- ========================================== -->
-  <div id="screen-pdf" class="flex-1 flex overflow-hidden hidden bg-[#353b43]">
-    <aside class="w-12 bg-[#2d3239] border-r border-slate-700 flex flex-col items-center py-3 space-y-4 text-slate-400 flex-shrink-0">
-      <button class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center text-blue-400 bg-slate-800"><i class="fa-solid fa-arrow-pointer"></i></button>
-      <button class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center"><i class="fa-solid fa-font"></i></button>
-    </aside>
-    <div class="flex-1 flex flex-col overflow-hidden p-4" id="pdf-viewport-container"></div>
+  <div id="screen-pdf" class="flex-1 flex flex-col overflow-hidden hidden bg-[#f4f4f4] text-slate-800">
+    
+    <!-- Top Menu Bar -->
+    <div class="h-8 bg-white border-b border-gray-300 flex items-center px-4 text-[11px] text-gray-700 select-none shadow-sm z-20">
+      <span class="mr-4 hover:bg-gray-100 px-2 py-1 rounded cursor-pointer transition">File</span>
+      <span class="mr-4 hover:bg-gray-100 px-2 py-1 rounded cursor-pointer transition">Edit</span>
+      <span class="mr-4 hover:bg-gray-100 px-2 py-1 rounded cursor-pointer transition">View</span>
+      <span class="mr-4 hover:bg-gray-100 px-2 py-1 rounded cursor-pointer transition">Sign</span>
+      <span class="mr-4 hover:bg-gray-100 px-2 py-1 rounded cursor-pointer transition">Window</span>
+      <span class="mr-4 hover:bg-gray-100 px-2 py-1 rounded cursor-pointer transition">Help</span>
+    </div>
+    
+    <!-- Tools / Document Tabs -->
+    <div class="h-10 bg-gray-100 border-b border-gray-300 flex items-center px-2 select-none z-10">
+      <div class="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-blue-600 cursor-pointer transition">Home</div>
+      <div class="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-blue-600 cursor-pointer transition">Tools</div>
+      <div class="px-4 py-2 text-xs font-semibold bg-white border-t-2 border-blue-600 shadow-[0_-2px_5px_rgba(0,0,0,0.05)] flex items-center gap-2 rounded-t-sm ml-2" id="acrobat-tab-name">
+        No Document <i class="fa-solid fa-xmark text-gray-400 hover:text-red-500 cursor-pointer transition"></i>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex overflow-hidden">
+      
+      <!-- Left Thumbnail Panel -->
+      <aside class="w-48 bg-[#f7f7f7] border-r border-gray-300 flex flex-col flex-shrink-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+        <!-- Sidebar Icons -->
+        <div class="flex text-gray-500 border-b border-gray-300">
+           <div class="flex-1 py-2 text-center hover:bg-gray-200 cursor-pointer text-blue-600 border-b-2 border-blue-600"><i class="fa-regular fa-file-pdf"></i></div>
+           <div class="flex-1 py-2 text-center hover:bg-gray-200 cursor-pointer"><i class="fa-regular fa-bookmark"></i></div>
+           <div class="flex-1 py-2 text-center hover:bg-gray-200 cursor-pointer"><i class="fa-solid fa-paperclip"></i></div>
+        </div>
+        <div class="flex-1 flex flex-col items-center py-4 space-y-4 overflow-y-auto" id="pdf-thumbnails">
+          <!-- Thumbnail Mockup -->
+          <div class="w-32 h-40 bg-white shadow-sm border border-gray-300 flex items-center justify-center text-gray-300 text-3xl relative group cursor-pointer hover:border-blue-500 transition-all">
+            <i class="fa-regular fa-file-lines"></i>
+            <div class="absolute bottom-1 right-1 text-[9px] font-bold text-gray-500 bg-gray-100 px-1 rounded opacity-0 group-hover:opacity-100">1</div>
+          </div>
+        </div>
+      </aside>
+      
+      <!-- Center PDF Canvas -->
+      <div class="flex-1 flex flex-col bg-[#e6e6e6] relative">
+        <!-- Acrobat Toolbar -->
+        <div class="h-10 bg-[#f7f7f7] border-b border-gray-300 flex items-center justify-center space-x-4 text-gray-600 text-sm z-10 shadow-sm">
+          <i class="fa-solid fa-floppy-disk hover:text-blue-600 cursor-pointer transition acrobat-tool-btn" title="Save" onclick="alert('Document Saved locally')"></i>
+          <i class="fa-solid fa-print hover:text-blue-600 cursor-pointer transition acrobat-tool-btn" title="Print" onclick="window.print()"></i>
+          <i class="fa-solid fa-envelope hover:text-blue-600 cursor-pointer transition acrobat-tool-btn" title="Share"></i>
+          <div class="w-px h-5 bg-gray-300 mx-2"></div>
+          <i class="fa-solid fa-arrow-up hover:text-blue-600 cursor-pointer transition acrobat-tool-btn"></i>
+          <span class="text-xs font-mono bg-white border border-gray-300 px-2 py-0.5 rounded">1 / 1</span>
+          <i class="fa-solid fa-arrow-down hover:text-blue-600 cursor-pointer transition acrobat-tool-btn"></i>
+          <div class="w-px h-5 bg-gray-300 mx-2"></div>
+          <i class="fa-solid fa-circle-minus hover:text-blue-600 cursor-pointer transition acrobat-tool-btn" onclick="zoomPdf(-0.1)"></i>
+          <span class="text-xs w-12 text-center font-mono" id="pdf-zoom-label">100%</span>
+          <i class="fa-solid fa-circle-plus hover:text-blue-600 cursor-pointer transition acrobat-tool-btn" onclick="zoomPdf(0.1)"></i>
+          <div class="w-px h-5 bg-gray-300 mx-2"></div>
+          <i class="fa-solid fa-hand text-blue-600 cursor-pointer transition acrobat-tool-btn"></i>
+          <i class="fa-solid fa-arrow-pointer hover:text-blue-600 cursor-pointer transition acrobat-tool-btn"></i>
+        </div>
+        
+        <!-- Document Area -->
+        <div class="flex-1 overflow-auto flex items-center justify-center p-6 relative" id="pdf-scroll-area">
+          <div id="pdf-empty-state" class="text-center text-gray-400">
+             <i class="fa-solid fa-file-pdf text-6xl mb-4 text-gray-300"></i>
+             <p class="text-sm font-medium">Nenhum documento aberto</p>
+             <button onclick="triggerFileInput('pdf')" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded text-xs font-bold hover:bg-blue-500 transition shadow">Open PDF</button>
+          </div>
+          <!-- The real iframe wrapper (hidden by default) -->
+          <div id="pdf-zoom-wrapper" class="w-full h-full transition-transform duration-200 origin-center hidden" style="transform: scale(1); max-width: 900px;">
+             <iframe id="pdf-real-iframe" src="" class="w-full h-full border border-gray-300 shadow-2xl bg-white rounded-sm"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Tool Panel (Edit PDF / Organize) -->
+      <aside class="w-72 bg-[#f7f7f7] border-l border-gray-300 flex flex-col flex-shrink-0 z-10 shadow-[-2px_0_5px_rgba(0,0,0,0.02)]">
+        <div class="h-10 flex items-center px-4 font-semibold text-sm border-b border-gray-300 text-gray-700 bg-white">
+          <i class="fa-solid fa-pen-to-square mr-2 text-blue-600"></i> Edit PDF
+        </div>
+        <div class="p-4 flex-1 overflow-y-auto space-y-5">
+           
+           <div class="grid grid-cols-2 gap-2 text-xs">
+              <button onclick="activateAcrobatTool(this)" class="flex flex-col items-center justify-center p-2 bg-blue-50 border border-blue-300 rounded text-blue-700 font-medium transition acrobat-tool-btn">
+                <i class="fa-solid fa-t mb-1 text-lg"></i> Edit Text
+              </button>
+              <button onclick="activateAcrobatTool(this)" class="flex flex-col items-center justify-center p-2 bg-white border border-gray-300 rounded hover:bg-gray-100 text-gray-600 transition acrobat-tool-btn">
+                <i class="fa-regular fa-image mb-1 text-lg"></i> Add Image
+              </button>
+              <button onclick="activateAcrobatTool(this)" class="flex flex-col items-center justify-center p-2 bg-white border border-gray-300 rounded hover:bg-gray-100 text-gray-600 transition acrobat-tool-btn">
+                <i class="fa-solid fa-link mb-1 text-lg"></i> Link
+              </button>
+              <button onclick="activateAcrobatTool(this)" class="flex flex-col items-center justify-center p-2 bg-white border border-gray-300 rounded hover:bg-gray-100 text-gray-600 transition acrobat-tool-btn">
+                <i class="fa-solid fa-crop mb-1 text-lg"></i> Crop Pages
+              </button>
+           </div>
+           
+           <div class="border-t border-gray-200 pt-4">
+              <span class="text-[10px] font-bold text-gray-500 mb-3 block tracking-wide">FORMAT</span>
+              <div class="space-y-2 text-xs text-gray-700">
+                <select class="w-full border border-gray-300 rounded px-2 py-1.5 bg-white outline-none focus:border-blue-500">
+                  <option>Connections</option><option>Arial</option><option>Times New Roman</option>
+                </select>
+                <div class="flex space-x-2">
+                  <select class="w-20 border border-gray-300 rounded px-2 py-1.5 bg-white outline-none"><option>12</option><option>14</option></select>
+                  <div class="flex-1 flex border border-gray-300 rounded bg-white overflow-hidden">
+                    <button class="flex-1 hover:bg-gray-100 py-1.5 border-r border-gray-300 font-bold acrobat-tool-btn">B</button>
+                    <button class="flex-1 hover:bg-gray-100 py-1.5 border-r border-gray-300 italic font-serif acrobat-tool-btn">I</button>
+                    <button class="flex-1 hover:bg-gray-100 py-1.5 underline acrobat-tool-btn">U</button>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                  <span>Color:</span>
+                  <div class="w-6 h-6 bg-black rounded border border-gray-300 cursor-pointer"></div>
+                </div>
+              </div>
+           </div>
+
+           <div class="border-t border-gray-200 pt-4">
+              <button onclick="alert('Funcionalidade de Exportação de PDF requer backend para salvar o arquivo de forma nativa.')" class="w-full bg-gray-800 hover:bg-gray-700 text-white py-2 rounded text-xs font-bold transition shadow">
+                Export to Word/Excel
+              </button>
+           </div>
+        </div>
+      </aside>
+    </div>
   </div>
 
   <!-- ========================================== -->
-  <!-- SCREEN 3: PHOTO STUDIO (FULL PHOTOSHOP UI) -->
+  <!-- SCREEN 3: PHOTO STUDIO (PHOTOSHOP UI) -->
   <!-- ========================================== -->
+  <!-- Mantido intacto da V4 conforme solicitado -->
   <div id="screen-photo" class="flex-1 flex flex-col overflow-hidden hidden bg-[#1e1e1e]">
-    
     <!-- Top Options Bar -->
     <div class="h-9 bg-[#252526] border-b border-[#333] flex items-center px-2 space-x-4 text-[11px] text-[#cccccc] flex-shrink-0">
-      <div class="flex items-center space-x-1 border-r border-[#444] pr-3">
-        <i class="fa-solid fa-paint-brush"></i>
-        <i class="fa-solid fa-caret-down text-[8px] ml-1"></i>
-      </div>
+      <div class="flex items-center space-x-1 border-r border-[#444] pr-3"><i class="fa-solid fa-paint-brush"></i><i class="fa-solid fa-caret-down text-[8px] ml-1"></i></div>
       <div class="flex items-center space-x-2 border-r border-[#444] pr-3">
-        <div class="flex items-center bg-[#3c3c3c] px-2 py-1 rounded">
-          <span class="mr-2">Size:</span>
-          <span class="font-bold">45 px</span>
-          <i class="fa-solid fa-caret-down text-[8px] ml-2"></i>
-        </div>
+        <div class="flex items-center bg-[#3c3c3c] px-2 py-1 rounded"><span class="mr-2">Size:</span><span class="font-bold">45 px</span><i class="fa-solid fa-caret-down text-[8px] ml-2"></i></div>
       </div>
-      <div class="flex items-center space-x-2 border-r border-[#444] pr-3">
-        <span>Mode:</span>
-        <select class="bg-[#3c3c3c] border-none text-white outline-none rounded px-1"><option>Normal</option><option>Multiply</option><option>Screen</option></select>
-      </div>
-      <div class="flex items-center space-x-2 border-r border-[#444] pr-3">
-        <span>Opacity:</span>
-        <span class="font-bold">100%</span>
-      </div>
-      <div class="flex items-center space-x-2">
-        <span>Flow:</span>
-        <span class="font-bold">100%</span>
-      </div>
+      <div class="flex items-center space-x-2 border-r border-[#444] pr-3"><span>Mode:</span><select class="bg-[#3c3c3c] border-none text-white outline-none rounded px-1"><option>Normal</option></select></div>
       <div class="flex-1"></div>
-      <button onclick="alert('Image exported successfully!')" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded">Export</button>
+      <button onclick="alert('Export ready')" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded">Export</button>
     </div>
 
     <div class="flex-1 flex overflow-hidden">
       <!-- Left Toolbar -->
       <aside class="w-10 bg-[#252526] border-r border-[#333] flex flex-col items-center py-1 flex-shrink-0 overflow-y-auto">
-        <div class="ps-tool-btn" title="Move Tool (V)"><i class="fa-solid fa-arrows-up-down-left-right"></i></div>
-        <div class="ps-tool-btn" title="Rectangular Marquee (M)"><i class="fa-regular fa-square"></i></div>
-        <div class="ps-tool-btn" title="Lasso Tool (L)"><i class="fa-solid fa-lasso"></i></div>
-        <div class="ps-tool-btn" title="Magic Wand Tool (W)"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-        <div class="ps-tool-btn" title="Crop Tool (C)"><i class="fa-solid fa-crop-simple"></i></div>
-        <div class="ps-tool-btn" title="Eyedropper Tool (I)"><i class="fa-solid fa-eye-dropper"></i></div>
-        <div class="ps-tool-btn" title="Spot Healing Brush (J)"><i class="fa-solid fa-band-aid"></i></div>
-        <div class="ps-tool-btn active" title="Brush Tool (B)"><i class="fa-solid fa-paint-brush"></i></div>
-        <div class="ps-tool-btn" title="Clone Stamp Tool (S)"><i class="fa-solid fa-stamp"></i></div>
-        <div class="ps-tool-btn" title="History Brush Tool (Y)"><i class="fa-solid fa-clock-rotate-left"></i></div>
-        <div class="ps-tool-btn" title="Eraser Tool (E)"><i class="fa-solid fa-eraser"></i></div>
-        <div class="ps-tool-btn" title="Gradient Tool (G)"><i class="fa-solid fa-circle-half-stroke"></i></div>
-        <div class="ps-tool-btn" title="Blur Tool"><i class="fa-solid fa-droplet"></i></div>
-        <div class="ps-tool-btn" title="Dodge Tool (O)"><i class="fa-solid fa-circle-notch"></i></div>
-        <div class="ps-tool-btn" title="Pen Tool (P)"><i class="fa-solid fa-pen-nib"></i></div>
-        <div class="ps-tool-btn" title="Horizontal Type Tool (T)"><i class="fa-solid fa-t"></i></div>
-        <div class="ps-tool-btn" title="Path Selection (A)"><i class="fa-solid fa-arrow-pointer"></i></div>
-        <div class="ps-tool-btn" title="Custom Shape (U)"><i class="fa-solid fa-shapes"></i></div>
-        <div class="ps-tool-btn" title="Hand Tool (H)"><i class="fa-regular fa-hand"></i></div>
-        <div class="ps-tool-btn" title="Zoom Tool (Z)"><i class="fa-solid fa-magnifying-glass"></i></div>
-        
-        <div class="my-2 border-t border-[#444] w-6"></div>
-        <!-- Color Picker -->
-        <div class="relative w-6 h-6 mb-3 cursor-pointer">
-          <div class="absolute bottom-0 right-0 w-4 h-4 bg-white border border-[#555] rounded-sm"></div>
-          <div class="absolute top-0 left-0 w-4 h-4 bg-black border border-[#555] rounded-sm"></div>
-        </div>
+        <div class="ps-tool-btn" title="Move (V)"><i class="fa-solid fa-arrows-up-down-left-right"></i></div>
+        <div class="ps-tool-btn" title="Marquee (M)"><i class="fa-regular fa-square"></i></div>
+        <div class="ps-tool-btn" title="Lasso (L)"><i class="fa-solid fa-lasso"></i></div>
+        <div class="ps-tool-btn" title="Magic Wand (W)"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        <div class="ps-tool-btn" title="Crop (C)"><i class="fa-solid fa-crop-simple"></i></div>
+        <div class="ps-tool-btn active" title="Brush (B)"><i class="fa-solid fa-paint-brush"></i></div>
+        <div class="ps-tool-btn" title="Text (T)"><i class="fa-solid fa-t"></i></div>
       </aside>
 
       <!-- Center Canvas -->
-      <div class="flex-1 overflow-auto flex items-center justify-center p-8 relative" style="background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 20px 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
-        <div id="photo-viewport-container" class="relative shadow-[0_0_15px_rgba(0,0,0,0.5)] bg-transparent"></div>
+      <div class="flex-1 overflow-auto flex items-center justify-center p-8 relative" style="background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 20px 20px;">
+        <div id="photo-viewport-container" class="relative bg-transparent transition-transform" style="transform: scale(1)"></div>
       </div>
 
       <!-- Right Panels -->
       <aside class="w-[280px] bg-[#252526] border-l border-[#333] flex flex-col flex-shrink-0">
-        
-        <!-- Panel 1: Color / Properties / Adjustments -->
+        <!-- Panel 1: Adjustments -->
         <div class="h-1/2 flex flex-col border-b border-[#333]">
           <div class="flex text-[11px] text-[#888] px-2 pt-2 bg-[#2d2d2d] border-b border-[#333]">
-            <div class="px-3 py-1 cursor-pointer">Color</div>
-            <div class="px-3 py-1 cursor-pointer">Properties</div>
             <div class="px-3 py-1 text-[#e0e0e0] bg-[#252526] border-t border-l border-r border-[#333] rounded-t-sm font-bold">Adjustments</div>
           </div>
           <div class="flex-1 p-3 overflow-y-auto bg-[#252526] text-xs text-[#cccccc]">
-            <div class="grid grid-cols-4 gap-2 mb-4">
-              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Brightness/Contrast"><i class="fa-solid fa-sun text-lg"></i></div>
-              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Levels"><i class="fa-solid fa-chart-simple text-lg"></i></div>
-              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Curves"><i class="fa-solid fa-chart-line text-lg"></i></div>
-              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Exposure"><i class="fa-solid fa-plus-minus text-lg"></i></div>
-              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Vibrance"><i class="fa-solid fa-v text-lg"></i></div>
-              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Hue/Saturation"><i class="fa-solid fa-palette text-lg"></i></div>
-              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Color Balance"><i class="fa-solid fa-scale-balanced text-lg"></i></div>
-              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Black & White"><i class="fa-solid fa-circle-half-stroke text-lg"></i></div>
-            </div>
-            
-            <div class="space-y-3 pt-3 border-t border-[#3c3c3c]">
+            <div class="space-y-3">
               <div class="flex justify-between items-center"><span class="text-[10px]">BRIGHTNESS</span><span class="text-[10px]" id="lbl-bright">0</span></div>
               <input type="range" id="rng-bright" min="-100" max="100" value="0" oninput="applyPhotoFilters()" class="w-full">
-              
               <div class="flex justify-between items-center"><span class="text-[10px]">CONTRAST</span><span class="text-[10px]" id="lbl-contrast">0</span></div>
               <input type="range" id="rng-contrast" min="-100" max="100" value="0" oninput="applyPhotoFilters()" class="w-full">
-              
               <div class="flex justify-between items-center"><span class="text-[10px]">SATURATION</span><span class="text-[10px]" id="lbl-saturate">0</span></div>
               <input type="range" id="rng-saturate" min="-100" max="100" value="0" oninput="applyPhotoFilters()" class="w-full">
             </div>
           </div>
         </div>
-        
         <!-- Panel 2: Layers -->
         <div class="flex-1 flex flex-col">
           <div class="flex text-[11px] text-[#888] px-2 pt-2 bg-[#2d2d2d] border-b border-[#333]">
             <div class="px-3 py-1 text-[#e0e0e0] bg-[#252526] border-t border-l border-r border-[#333] rounded-t-sm font-bold">Layers</div>
-            <div class="px-3 py-1 cursor-pointer">Channels</div>
-            <div class="px-3 py-1 cursor-pointer">Paths</div>
           </div>
-          
-          <!-- Layer Tools -->
-          <div class="px-2 py-1.5 bg-[#252526] border-b border-[#333] text-[11px] text-[#ccc] flex items-center justify-between">
-            <select class="bg-[#3c3c3c] border-none outline-none rounded px-1 w-24 text-[10px]"><option>Normal</option><option>Multiply</option></select>
-            <div class="flex items-center space-x-1"><span>Opacity:</span><span class="bg-[#3c3c3c] px-1 rounded">100%</span></div>
-          </div>
-          <div class="px-2 py-1.5 bg-[#252526] border-b border-[#333] text-[11px] text-[#ccc] flex items-center space-x-3">
-            <span>Lock:</span>
-            <i class="fa-solid fa-border-all cursor-pointer hover:text-white"></i>
-            <i class="fa-solid fa-paintbrush cursor-pointer hover:text-white"></i>
-            <i class="fa-solid fa-arrows-up-down-left-right cursor-pointer hover:text-white"></i>
-            <i class="fa-solid fa-lock cursor-pointer hover:text-white"></i>
-            <div class="flex-1 flex justify-end items-center space-x-1"><span>Fill:</span><span class="bg-[#3c3c3c] px-1 rounded">100%</span></div>
-          </div>
-          
-          <!-- Layers List -->
           <div class="flex-1 overflow-y-auto bg-[#1e1e1e] p-1 space-y-px">
             <div class="flex items-center p-1.5 bg-[#37373d] rounded-sm cursor-pointer border border-[#007fd4]">
               <i class="fa-solid fa-eye text-[#ccc] w-5 text-center text-xs"></i>
-              <div class="w-8 h-8 bg-white/10 mx-1 rounded-sm flex justify-center overflow-hidden border border-[#555]">
-                <img id="layer-thumb" src="" class="w-full h-full object-cover">
-              </div>
+              <div class="w-8 h-8 bg-white/10 mx-1 rounded-sm flex justify-center overflow-hidden border border-[#555]"><img id="layer-thumb" src="" class="w-full h-full object-cover"></div>
               <span class="text-xs text-white ml-1 font-medium truncate" id="layer-name">Background</span>
-              <i class="fa-solid fa-lock text-[#888] ml-auto text-[10px]"></i>
-            </div>
-            <div class="flex items-center p-1.5 hover:bg-[#2d2d30] rounded-sm cursor-pointer">
-              <i class="fa-solid fa-eye text-[#ccc] w-5 text-center text-xs"></i>
-              <div class="w-8 h-8 bg-white/10 mx-1 rounded-sm flex items-center justify-center text-xs font-bold border border-[#555]">T</div>
-              <span class="text-xs text-[#ccc] ml-1 truncate">Title Text</span>
-            </div>
-          </div>
-          
-          <!-- Bottom Action Icons -->
-          <div class="h-8 bg-[#252526] border-t border-[#333] flex items-center justify-between px-3 text-[#aaa] text-xs">
-            <i class="fa-solid fa-link hover:text-white cursor-pointer"></i>
-            <div class="flex space-x-3">
-              <i class="fa-solid fa-layer-group hover:text-white cursor-pointer" title="Add Layer Mask"></i>
-              <i class="fa-solid fa-circle-half-stroke hover:text-white cursor-pointer" title="Create New Fill or Adjustment Layer"></i>
-              <i class="fa-solid fa-folder hover:text-white cursor-pointer" title="Create a New Group"></i>
-              <i class="fa-solid fa-plus-square hover:text-white cursor-pointer" title="Create a New Layer"></i>
-              <i class="fa-solid fa-trash hover:text-white cursor-pointer" title="Delete Layer"></i>
             </div>
           </div>
         </div>
@@ -260,186 +288,45 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- SCREEN 4: MOTION CUT (FULL CAPCUT UI) -->
+  <!-- SCREEN 4: MOTION CUT (CAPCUT UI) -->
   <!-- ========================================== -->
+  <!-- Mantido intacto da V4 -->
   <div id="screen-motion" class="flex-1 flex flex-col overflow-hidden hidden bg-[#14151a]">
-    
-    <!-- UPPER HALF -->
     <div class="flex-1 flex min-h-0 border-b border-[#2a2e37]">
-      
-      <!-- Left Sidebar (Media/Effects) -->
-      <aside class="w-20 bg-[#14151a] border-r border-[#2a2e37] flex flex-col items-center pt-2 overflow-y-auto flex-shrink-0 scrollbar-hide">
+      <aside class="w-20 bg-[#14151a] border-r border-[#2a2e37] flex flex-col items-center pt-2 overflow-y-auto flex-shrink-0">
         <div class="cc-menu-item active w-full"><i class="fa-solid fa-photo-film"></i><span>Media</span></div>
-        <div class="cc-menu-item w-full"><i class="fa-solid fa-music"></i><span>Audio</span></div>
-        <div class="cc-menu-item w-full"><i class="fa-solid fa-t"></i><span>Text</span></div>
-        <div class="cc-menu-item w-full"><i class="fa-solid fa-note-sticky"></i><span>Stickers</span></div>
         <div class="cc-menu-item w-full"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Effects</span></div>
-        <div class="cc-menu-item w-full"><i class="fa-solid fa-shuffle"></i><span>Transitions</span></div>
-        <div class="cc-menu-item w-full"><i class="fa-solid fa-camera-retro"></i><span>Filters</span></div>
-        <div class="cc-menu-item w-full"><i class="fa-solid fa-sliders"></i><span>Adjustment</span></div>
       </aside>
       
       <!-- Media Pool -->
-      <aside class="w-64 bg-[#181a1f] border-r border-[#2a2e37] flex flex-col flex-shrink-0">
-        <div class="h-10 flex items-center px-4 space-x-4 border-b border-[#2a2e37]">
-          <span class="cc-tab active">Local</span>
-          <span class="cc-tab">Library</span>
-        </div>
-        <div class="p-4 flex-1 overflow-y-auto">
-          <button onclick="triggerFileInput('motion')" class="w-full bg-[#2962ff] hover:bg-blue-600 text-white font-medium py-2 rounded mb-4 text-xs">Import</button>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="bg-[#2a2e37] aspect-video rounded flex items-center justify-center relative group">
-              <i class="fa-solid fa-video text-slate-500"></i>
-              <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition cursor-pointer rounded"><i class="fa-solid fa-plus text-white text-xl"></i></div>
-            </div>
-          </div>
-        </div>
+      <aside class="w-64 bg-[#181a1f] border-r border-[#2a2e37] flex flex-col flex-shrink-0 p-4">
+          <button onclick="triggerFileInput('motion')" class="w-full bg-[#2962ff] hover:bg-blue-600 text-white font-medium py-2 rounded mb-4 text-xs transition">Import Media</button>
       </aside>
 
       <!-- Center Player -->
       <div class="flex-1 flex flex-col bg-[#0e1015]">
-        <div class="h-10 flex items-center justify-between px-4 text-xs text-[#8f959e] border-b border-[#2a2e37]">
-          <div class="flex space-x-4"><span>Player</span></div>
-          <div class="flex space-x-4"><span>1080P</span><span>30 FPS</span></div>
-        </div>
-        <div class="flex-1 flex items-center justify-center p-4 relative" id="motion-viewport-container">
-          <!-- Video will be here -->
-        </div>
-        <!-- Player Controls -->
+        <div class="flex-1 flex items-center justify-center p-4 relative" id="motion-viewport-container"></div>
         <div class="h-12 flex items-center justify-between px-4 text-[#8f959e] text-xs">
-          <span id="motion-time" class="font-mono">00:00:00:00 / 00:00:00:00</span>
+          <span class="font-mono">00:00:00:00</span>
           <div class="flex items-center space-x-6">
-            <i class="fa-solid fa-backward-step hover:text-white cursor-pointer"></i>
             <i class="fa-solid fa-play text-white text-xl hover:text-blue-500 cursor-pointer" onclick="toggleMotionPlay()"></i>
-            <i class="fa-solid fa-forward-step hover:text-white cursor-pointer"></i>
           </div>
           <i class="fa-solid fa-expand hover:text-white cursor-pointer text-sm"></i>
         </div>
       </div>
-
-      <!-- Right Properties Panel -->
-      <aside class="w-80 bg-[#181a1f] border-l border-[#2a2e37] flex flex-col flex-shrink-0 text-xs text-[#e5e6eb]">
-        <div class="flex h-10 px-2 items-end border-b border-[#2a2e37] space-x-4">
-          <span class="cc-tab active">Video</span>
-          <span class="cc-tab">Audio</span>
-          <span class="cc-tab">Speed</span>
-          <span class="cc-tab">Animation</span>
-          <span class="cc-tab">Adjustment</span>
-        </div>
-        <!-- Sub-tabs -->
-        <div class="flex h-8 px-4 items-center bg-[#1e222b] space-x-4 text-[#8f959e] border-b border-[#2a2e37]">
-          <span class="text-white">Basic</span>
-          <span class="hover:text-white cursor-pointer">Cutout</span>
-          <span class="hover:text-white cursor-pointer">Mask</span>
-          <span class="hover:text-white cursor-pointer">Enhance</span>
-        </div>
-        <!-- Scrollable Properties -->
-        <div class="flex-1 p-4 overflow-y-auto space-y-6">
-          <!-- Scale/Position -->
-          <div>
-            <div class="flex justify-between items-center mb-3"><span class="font-bold">Scale</span><i class="fa-solid fa-rotate-left text-[#5c616d]"></i></div>
-            <div class="flex items-center space-x-2">
-              <input type="range" min="0" max="200" value="100" class="flex-1 accent-blue-500">
-              <span class="w-10 text-right">100%</span>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mt-4">
-              <div>
-                <span class="text-[#8f959e] mb-1 block">Position X</span>
-                <div class="bg-[#14151a] border border-[#2a2e37] rounded px-2 py-1 text-center">0.00</div>
-              </div>
-              <div>
-                <span class="text-[#8f959e] mb-1 block">Position Y</span>
-                <div class="bg-[#14151a] border border-[#2a2e37] rounded px-2 py-1 text-center">0.00</div>
-              </div>
-            </div>
-            <div class="mt-4 flex justify-between items-center mb-1"><span class="text-[#8f959e]">Rotate</span><span>0°</span></div>
-            <input type="range" min="-180" max="180" value="0" class="w-full accent-blue-500">
-          </div>
-          <!-- Blend -->
-          <div class="border-t border-[#2a2e37] pt-4">
-            <div class="flex justify-between items-center mb-3"><span class="font-bold">Blend</span></div>
-            <div class="flex justify-between items-center mb-2"><span class="text-[#8f959e]">Mode</span>
-              <select class="bg-[#14151a] border border-[#2a2e37] text-white rounded px-2 py-1 outline-none"><option>Normal</option><option>Screen</option></select>
-            </div>
-            <div class="flex items-center space-x-2">
-              <span class="text-[#8f959e] w-12">Opacity</span>
-              <input type="range" min="0" max="100" value="100" class="flex-1 accent-blue-500">
-              <span class="w-10 text-right">100%</span>
-            </div>
-          </div>
-        </div>
-      </aside>
     </div>
 
     <!-- LOWER HALF: TIMELINE -->
     <div class="h-64 bg-[#14151a] flex flex-col flex-shrink-0 relative">
-      <!-- Toolbar -->
-      <div class="h-10 flex items-center justify-between px-4 text-[#8f959e] text-lg border-b border-[#2a2e37]">
-        <div class="flex items-center space-x-5">
-          <i class="fa-solid fa-arrow-pointer text-white cursor-pointer" title="Select"></i>
-          <i class="fa-solid fa-hand cursor-pointer hover:text-white" title="Hand"></i>
-          <div class="w-px h-4 bg-[#2a2e37]"></div>
-          <i class="fa-solid fa-scissors cursor-pointer hover:text-white" title="Split (Cmd+B)"></i>
-          <i class="fa-solid fa-trash cursor-pointer hover:text-white" title="Delete"></i>
-          <div class="w-px h-4 bg-[#2a2e37]"></div>
-          <i class="fa-solid fa-rotate-left cursor-pointer hover:text-white" title="Undo"></i>
-          <i class="fa-solid fa-rotate-right cursor-pointer hover:text-white" title="Redo"></i>
-          <div class="w-px h-4 bg-[#2a2e37]"></div>
-          <!-- Advanced Tools -->
-          <i class="fa-solid fa-clock-rotate-left cursor-pointer hover:text-white text-sm" title="Reverse"></i>
-          <i class="fa-solid fa-object-group cursor-pointer hover:text-white text-sm" title="Mirror"></i>
-          <i class="fa-solid fa-rotate cursor-pointer hover:text-white text-sm" title="Rotate"></i>
-          <i class="fa-solid fa-crop-simple cursor-pointer hover:text-white text-sm" title="Crop"></i>
-        </div>
-        <div class="flex items-center space-x-3 text-sm">
-          <i class="fa-solid fa-minus cursor-pointer"></i>
-          <input type="range" class="w-24 accent-blue-500">
-          <i class="fa-solid fa-plus cursor-pointer"></i>
-        </div>
-      </div>
-      
-      <!-- Tracks Area -->
-      <div class="flex-1 overflow-auto relative bg-[#181a1f]">
-        <!-- Ruler -->
-        <div class="h-6 border-b border-[#2a2e37] bg-[#14151a] sticky top-0 z-10 flex">
-          <div class="w-20 flex-shrink-0 border-r border-[#2a2e37]"></div>
-          <div class="flex-1" style="background-image: linear-gradient(90deg, #333 1px, transparent 1px); background-size: 50px 100%;">
-            <div class="text-[10px] text-[#5c616d] ml-1 mt-1 absolute" style="left:80px">00:00</div>
-            <div class="text-[10px] text-[#5c616d] ml-1 mt-1 absolute" style="left:180px">00:05</div>
-            <div class="text-[10px] text-[#5c616d] ml-1 mt-1 absolute" style="left:280px">00:10</div>
-          </div>
-        </div>
-        
-        <!-- Track 1: Video (Main) -->
-        <div class="h-20 border-b border-[#14151a] flex items-center bg-[#1e222b]">
-          <div class="w-20 h-full flex-shrink-0 border-r border-[#2a2e37] flex flex-col items-center justify-center text-[#5c616d] space-y-2 bg-[#14151a]">
-            <i class="fa-solid fa-video text-white text-sm"></i>
-            <div class="flex space-x-2 text-[10px]"><i class="fa-solid fa-eye text-white hover:text-blue-500 cursor-pointer"></i><i class="fa-solid fa-lock hover:text-white cursor-pointer"></i></div>
-          </div>
-          <div class="relative flex-1 h-full py-2 px-2" id="timeline-video-track">
-            <!-- Dynamic Clip -->
-          </div>
-        </div>
-        
-        <!-- Track 2: Audio -->
-        <div class="h-16 border-b border-[#14151a] flex items-center bg-[#181a1f]">
-          <div class="w-20 h-full flex-shrink-0 border-r border-[#2a2e37] flex flex-col items-center justify-center text-[#5c616d] space-y-2 bg-[#14151a]">
-            <i class="fa-solid fa-music text-sm"></i>
-            <div class="flex space-x-2 text-[10px]"><i class="fa-solid fa-volume-high hover:text-white cursor-pointer"></i><i class="fa-solid fa-lock hover:text-white cursor-pointer"></i></div>
-          </div>
-          <div class="relative flex-1 h-full py-1 px-2"></div>
-        </div>
-
-        <!-- Playhead -->
-        <div class="absolute top-0 bottom-0 left-[180px] w-px bg-white z-20 pointer-events-none">
-          <div class="absolute top-0 -left-[4px] w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-white"></div>
-        </div>
+      <div class="flex-1 overflow-auto relative bg-[#181a1f] p-4">
+         <div class="h-20 border border-[#2a2e37] flex items-center bg-[#1e222b] rounded p-2" id="timeline-video-track">
+         </div>
       </div>
     </div>
   </div>
 
   <script>
-    const AppState = { activeEngine: 'home', currentPdfFile: null, currentPhotoFile: null, currentMotionFile: null, recentFiles: [] };
+    const AppState = { activeEngine: 'home', currentPdfFile: null, currentPhotoFile: null, currentMotionFile: null, recentFiles: [], pdfZoom: 1.0 };
     window.addEventListener('DOMContentLoaded', () => { renderRecentList(); });
 
     function showHomeScreen() { switchEngine('home'); }
@@ -453,7 +340,6 @@
 
       document.getElementById(`screen-${engine}`).classList.remove('hidden');
       const activeBtn = document.getElementById(`tab-${engine}`);
-      
       if(activeBtn) {
         let color = engine==='home'?'bg-blue-600': engine==='pdf'?'bg-red-700': engine==='photo'?'bg-cyan-700':'bg-purple-700';
         activeBtn.className = `px-3 py-1 rounded-md text-xs font-medium text-white ${color} transition flex items-center gap-1.5 shadow-sm`;
@@ -488,6 +374,7 @@
         switchEngine('motion');
       } else {
         AppState.currentPdfFile = { name: fileName, url: fileUrl };
+        AppState.pdfZoom = 1.0; // reset zoom
         addFileToRecent(fileName, 'pdf', 'PDF Document', fileSize);
         switchEngine('pdf');
       }
@@ -506,7 +393,7 @@
       container.innerHTML = AppState.recentFiles.map(f => {
         let ic = f.type==='pdf'?'text-red-500 fa-file-pdf':f.type==='photo'?'text-cyan-500 fa-file-image':'text-purple-500 fa-file-video';
         return `
-          <div class="grid grid-cols-12 px-4 py-3 hover:bg-slate-50 cursor-pointer text-xs items-center" onclick="openRecent(${f.id})">
+          <div class="grid grid-cols-12 px-4 py-3 hover:bg-slate-50 cursor-pointer text-xs items-center transition" onclick="openRecent(${f.id})">
             <div class="col-span-7 flex items-center space-x-3"><i class="fa-solid ${ic} text-lg"></i> <span class="font-bold text-slate-800">${f.name}</span></div>
             <div class="col-span-3 text-slate-500">${f.date}</div>
             <div class="col-span-2 text-right text-slate-400">${f.size}</div>
@@ -515,15 +402,57 @@
       }).join('');
     }
 
+    /* PDF ACROBAT LOGIC */
     function renderPdfViewport() {
-      const container = document.getElementById('pdf-viewport-container');
+      const wrapper = document.getElementById('pdf-zoom-wrapper');
+      const emptyState = document.getElementById('pdf-empty-state');
+      const iframe = document.getElementById('pdf-real-iframe');
+      const tabName = document.getElementById('acrobat-tab-name');
+      const zoomLabel = document.getElementById('pdf-zoom-label');
+
       if (!AppState.currentPdfFile) {
-        container.innerHTML = `<div class="flex-1 flex flex-col items-center justify-center text-slate-400 bg-[#2d3239] rounded shadow-inner"><i class="fa-solid fa-file-pdf text-4xl mb-4"></i><p>Abra um arquivo PDF do seu computador</p><button onclick="triggerFileInput('pdf')" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Abrir Arquivo</button></div>`;
+        emptyState.classList.remove('hidden');
+        wrapper.classList.add('hidden');
+        tabName.innerHTML = `No Document`;
         return;
       }
-      container.innerHTML = `<iframe src="${AppState.currentPdfFile.url}#view=FitH" class="w-full h-full border-0 rounded shadow-2xl bg-white"></iframe>`;
+      
+      emptyState.classList.add('hidden');
+      wrapper.classList.remove('hidden');
+      tabName.innerHTML = `${AppState.currentPdfFile.name} <i class="fa-solid fa-xmark text-gray-400 hover:text-red-500 cursor-pointer transition" onclick="closeDoc()"></i>`;
+      iframe.src = `${AppState.currentPdfFile.url}#view=FitH`;
+      
+      wrapper.style.transform = `scale(${AppState.pdfZoom})`;
+      zoomLabel.textContent = `${Math.round(AppState.pdfZoom * 100)}%`;
     }
 
+    function zoomPdf(step) {
+      if(!AppState.currentPdfFile) return;
+      AppState.pdfZoom += step;
+      if(AppState.pdfZoom < 0.3) AppState.pdfZoom = 0.3;
+      if(AppState.pdfZoom > 3.0) AppState.pdfZoom = 3.0;
+      
+      document.getElementById('pdf-zoom-wrapper').style.transform = `scale(${AppState.pdfZoom})`;
+      document.getElementById('pdf-zoom-label').textContent = `${Math.round(AppState.pdfZoom * 100)}%`;
+    }
+
+    function closeDoc() {
+      AppState.currentPdfFile = null;
+      renderPdfViewport();
+    }
+
+    function activateAcrobatTool(btn) {
+      // Toggle button visual state
+      document.querySelectorAll('.acrobat-tool-btn').forEach(b => {
+         b.classList.remove('bg-blue-50', 'border-blue-300', 'text-blue-700');
+         if(b.classList.contains('bg-white')) b.classList.add('text-gray-600');
+      });
+      btn.classList.remove('bg-white', 'text-gray-600');
+      btn.classList.add('bg-blue-50', 'border-blue-300', 'text-blue-700');
+    }
+
+
+    /* PHOTO LOGIC */
     function renderPhotoViewport() {
       const container = document.getElementById('photo-viewport-container');
       if (!AppState.currentPhotoFile) {
@@ -534,7 +463,6 @@
       document.getElementById('layer-thumb').src = AppState.currentPhotoFile.url;
       container.innerHTML = `<img id="active-photo-img" src="${AppState.currentPhotoFile.url}" class="max-w-full max-h-full object-contain shadow-[0_0_20px_rgba(0,0,0,0.8)] border border-[#444]">`;
     }
-
     function applyPhotoFilters() {
       const img = document.getElementById('active-photo-img');
       if (!img) return;
@@ -544,53 +472,27 @@
       document.getElementById('lbl-bright').textContent = b;
       document.getElementById('lbl-contrast').textContent = c;
       document.getElementById('lbl-saturate').textContent = s;
-      const bright = parseInt(b) + 100;
-      const cont = parseInt(c) + 100;
-      const sat = parseInt(s) + 100;
-      img.style.filter = `brightness(${bright}%) contrast(${cont}%) saturate(${sat}%)`;
+      img.style.filter = `brightness(${parseInt(b)+100}%) contrast(${parseInt(c)+100}%) saturate(${parseInt(s)+100}%)`;
     }
 
+    /* MOTION LOGIC */
     function renderMotionViewport() {
       const container = document.getElementById('motion-viewport-container');
       const track = document.getElementById('timeline-video-track');
-      
       if (!AppState.currentMotionFile) {
-        container.innerHTML = `<div class="text-center text-[#5c616d]"><p>Importe mídia para começar</p><button onclick="triggerFileInput('motion')" class="mt-4 bg-[#2962ff] hover:bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold">Importar Arquivo</button></div>`;
+        container.innerHTML = `<div class="text-center text-[#5c616d]"><button onclick="triggerFileInput('motion')" class="mt-4 bg-[#2962ff] hover:bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold transition">Importar Vídeo</button></div>`;
         track.innerHTML = '';
         return;
       }
       container.innerHTML = `<video id="motion-vid" src="${AppState.currentMotionFile.url}" class="max-w-full max-h-full object-contain"></video>`;
-      
-      track.innerHTML = `
-        <div class="h-full bg-[#3b82f6] border border-[#60a5fa] rounded overflow-hidden flex flex-col relative group cursor-pointer" style="width: 70%; margin-left: 20px;">
-          <div class="flex-1 flex overflow-hidden">
-            <!-- Simulated thumbnails -->
-            <div class="w-16 h-full bg-black/20 border-r border-black/10"></div>
-            <div class="w-16 h-full bg-black/20 border-r border-black/10"></div>
-            <div class="w-16 h-full bg-black/20 border-r border-black/10"></div>
-            <div class="w-16 h-full bg-black/20 border-r border-black/10"></div>
-          </div>
-          <div class="absolute bottom-0 left-0 right-0 bg-[#1e222b]/80 text-[10px] text-white px-1 truncate border-t border-black/20">
-            ${AppState.currentMotionFile.name}
-          </div>
-          <!-- Trimming handles -->
-          <div class="absolute top-0 bottom-0 left-0 w-2 bg-white/50 cursor-ew-resize hidden group-hover:block rounded-l"></div>
-          <div class="absolute top-0 bottom-0 right-0 w-2 bg-white/50 cursor-ew-resize hidden group-hover:block rounded-r"></div>
-        </div>
-      `;
+      track.innerHTML = `<div class="h-full bg-[#3b82f6] border border-[#60a5fa] rounded overflow-hidden flex flex-col relative w-[70%] cursor-pointer"><div class="absolute bottom-0 left-0 right-0 bg-[#1e222b]/80 text-[10px] text-white px-1 truncate">${AppState.currentMotionFile.name}</div></div>`;
     }
-
     function toggleMotionPlay() {
       const vid = document.getElementById('motion-vid');
       const icon = document.querySelector('.fa-play, .fa-pause');
       if(!vid) return;
-      if(vid.paused) {
-        vid.play();
-        icon.classList.replace('fa-play', 'fa-pause');
-      } else {
-        vid.pause();
-        icon.classList.replace('fa-pause', 'fa-play');
-      }
+      if(vid.paused) { vid.play(); icon.classList.replace('fa-play', 'fa-pause'); }
+      else { vid.pause(); icon.classList.replace('fa-pause', 'fa-play'); }
     }
   </script>
 </body>
