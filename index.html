@@ -8,98 +8,51 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @font-face {
-      font-family: 'Connections';
-      src: local('Connections'), local('Connections-Regular');
-    }
-    @font-face {
-      font-family: 'ConnectionsBold';
-      src: local('ConnectionsBold'), local('Connections-Bold');
-      font-weight: bold;
-    }
-    @font-face {
-      font-family: 'Nirmala UI';
-      src: local('Nirmala UI'), local('NirmalaUI');
-    }
+    @font-face { font-family: 'Connections'; src: local('Connections'), local('Connections-Regular'); }
+    @font-face { font-family: 'ConnectionsBold'; src: local('ConnectionsBold'), local('Connections-Bold'); font-weight: bold; }
+    @font-face { font-family: 'Nirmala UI'; src: local('Nirmala UI'), local('NirmalaUI'); }
     .font-connections { font-family: 'Connections', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    .font-connections-bold { font-family: 'ConnectionsBold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: bold; }
-    .font-nirmala { font-family: 'Nirmala UI', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     
-    /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-    .dark ::-webkit-scrollbar-thumb { background: #475569; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
 
-    .canvas-card {
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-    }
+    /* Estilos da Timeline do CapCut */
+    .timeline-track { background: #1a1d24; border-top: 1px solid #2a2e37; border-bottom: 1px solid #000; position: relative; }
+    .timeline-clip { background: #3b82f6; border-radius: 4px; border: 1px solid #60a5fa; color: white; text-shadow: 0 1px 1px rgba(0,0,0,0.5); }
+    .timeline-audio { background: #10b981; border: 1px solid #34d399; }
+    
+    /* Menu Lateral Estilo Photoshop */
+    .tool-btn { width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; border-radius: 6px; color: #94a3b8; transition: all 0.2s; }
+    .tool-btn:hover, .tool-btn.active { background: #3b82f6; color: white; }
   </style>
 </head>
-<body class="bg-[#f3f4f6] text-slate-800 antialiased selection:bg-blue-600 selection:text-white min-h-screen flex flex-col font-sans">
+<body class="bg-[#f3f4f6] text-slate-800 antialiased selection:bg-blue-600 selection:text-white h-screen flex flex-col font-sans overflow-hidden">
 
   <!-- TOP APP BAR -->
   <header class="h-12 bg-[#2d3239] text-slate-200 flex items-center justify-between px-3 text-xs select-none border-b border-[#1f2328] z-30 flex-shrink-0">
     <div class="flex items-center space-x-3">
-      <!-- LOGO SD -->
       <div class="flex items-center space-x-2 mr-2 cursor-pointer" onclick="showHomeScreen()">
-        <div class="w-7 h-7 bg-blue-700 rounded-md flex items-center justify-center font-black text-white text-xs tracking-tighter shadow-sm">
-          SD
-        </div>
+        <div class="w-7 h-7 bg-blue-700 rounded-md flex items-center justify-center font-black text-white text-xs tracking-tighter shadow-sm">SD</div>
         <span class="font-bold text-white text-sm hidden sm:inline tracking-tight">SwiftDoc <span class="text-blue-400 font-medium text-xs">DC</span></span>
       </div>
-
-      <!-- FILE / EDIT MENUS -->
       <nav class="hidden md:flex items-center space-x-1 text-slate-300">
-        <div class="relative group">
-          <button class="px-2.5 py-1 rounded hover:bg-slate-700 hover:text-white transition">File</button>
-          <div class="hidden group-hover:block absolute left-0 top-full bg-[#1e2329] text-slate-200 py-1.5 rounded-md shadow-xl border border-slate-700 w-44 z-50 text-xs">
-            <button onclick="triggerFileInput()" class="w-full text-left px-3 py-1.5 hover:bg-blue-600 flex justify-between">
-              <span>Open File...</span><span class="text-slate-400">Ctrl+O</span>
-            </button>
-            <button onclick="saveActiveFile()" class="w-full text-left px-3 py-1.5 hover:bg-blue-600 flex justify-between">
-              <span>Save As...</span><span class="text-slate-400">Ctrl+S</span>
-            </button>
-            <div class="h-px bg-slate-700 my-1"></div>
-            <button onclick="closeCurrentDocument()" class="w-full text-left px-3 py-1.5 hover:bg-red-600 flex justify-between">
-              <span>Close</span><span class="text-slate-400">Ctrl+W</span>
-            </button>
-          </div>
-        </div>
+        <button onclick="triggerFileInput('all')" class="px-2.5 py-1 rounded hover:bg-slate-700 hover:text-white transition">File</button>
         <button class="px-2.5 py-1 rounded hover:bg-slate-700 hover:text-white transition" onclick="showHomeScreen()">Home</button>
-        <button class="px-2.5 py-1 rounded hover:bg-slate-700 hover:text-white transition" onclick="alert('SwiftDoc Pro DC - Universal Editor\nVersão 2.4 com suporte nativo a PDF, Foto e Vídeo.')">Help</button>
       </nav>
     </div>
 
     <!-- CENTER ENGINE TABS -->
     <div class="flex items-center bg-[#1e2227] p-0.5 rounded-lg border border-slate-700">
-      <button id="tab-home" onclick="showHomeScreen()" class="px-3 py-1 rounded-md text-xs font-medium text-white bg-blue-600 transition flex items-center gap-1.5 shadow-sm">
-        <i class="fa-solid fa-house"></i>
-        <span>Home</span>
-      </button>
-      <button id="tab-pdf" onclick="switchEngine('pdf')" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5">
-        <i class="fa-solid fa-file-pdf text-red-500"></i>
-        <span id="tab-pdf-name">Booklets (PDF)</span>
-      </button>
-      <button id="tab-photo" onclick="switchEngine('photo')" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5">
-        <i class="fa-solid fa-image text-cyan-400"></i>
-        <span id="tab-photo-name">Photo</span>
-      </button>
-      <button id="tab-motion" onclick="switchEngine('motion')" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5">
-        <i class="fa-solid fa-play text-purple-400"></i>
-        <span id="tab-motion-name">Motion</span>
-      </button>
+      <button id="tab-home" onclick="showHomeScreen()" class="px-3 py-1 rounded-md text-xs font-medium text-white bg-blue-600 shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-house"></i> Home</button>
+      <button id="tab-pdf" onclick="switchEngine('pdf')" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5"><i class="fa-solid fa-file-pdf text-red-500"></i> <span id="tab-pdf-name">Booklets (PDF)</span></button>
+      <button id="tab-photo" onclick="switchEngine('photo')" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5"><i class="fa-solid fa-image text-cyan-400"></i> <span id="tab-photo-name">Photo</span></button>
+      <button id="tab-motion" onclick="switchEngine('motion')" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5"><i class="fa-solid fa-play text-purple-400"></i> <span id="tab-motion-name">Motion</span></button>
     </div>
 
     <!-- RIGHT QUICK ACTIONS -->
     <div class="flex items-center space-x-2">
-      <button onclick="toggleTheme()" title="Toggle Theme" class="w-8 h-8 rounded hover:bg-slate-700 flex items-center justify-center text-slate-300 hover:text-amber-300 transition">
-        <i class="fa-solid fa-lightbulb"></i>
-      </button>
-      <button onclick="triggerFileInput()" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-3 py-1 rounded flex items-center gap-1.5 shadow-sm transition">
-        <i class="fa-solid fa-folder-open"></i>
-        <span class="hidden sm:inline">Open File</span>
-      </button>
+      <button onclick="triggerFileInput('all')" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-3 py-1 rounded flex items-center gap-1.5 shadow-sm transition"><i class="fa-solid fa-folder-open"></i> Open File</button>
     </div>
   </header>
 
@@ -110,438 +63,288 @@
   <!-- SCREEN 1: HOME & RECENT DASHBOARD -->
   <!-- ========================================== -->
   <div id="screen-home" class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 max-w-7xl mx-auto w-full">
-    
-    <!-- TOP RECOMMENDED TOOLS -->
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
-      <!-- 5 Tools Box -->
-      <div class="lg:col-span-3 bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-sm font-bold text-slate-800">Recommended tools for you</h2>
-          <button onclick="triggerFileInput()" class="text-xs text-slate-500 hover:text-blue-600 font-medium px-3 py-1 rounded-full border border-slate-200 hover:border-blue-400 transition">See All Tools</button>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <div onclick="triggerFileInput('pdf')" class="p-3 rounded-lg border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 cursor-pointer transition flex flex-col justify-between">
-            <div>
-              <div class="w-7 h-7 rounded bg-red-100 text-red-600 flex items-center justify-center text-xs mb-2">
-                <i class="fa-solid fa-pen-nib"></i>
-              </div>
-              <h3 class="text-xs font-bold text-slate-800">Edit PDF</h3>
-              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">Edit vector text, apply fonts and format.</p>
-            </div>
-            <span class="text-[11px] font-semibold text-blue-600 mt-3 block">Use Now</span>
-          </div>
-
-          <div onclick="createNewPDF()" class="p-3 rounded-lg border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 cursor-pointer transition flex flex-col justify-between">
-            <div>
-              <div class="w-7 h-7 rounded bg-rose-100 text-rose-600 flex items-center justify-center text-xs mb-2">
-                <i class="fa-solid fa-plus"></i>
-              </div>
-              <h3 class="text-xs font-bold text-slate-800">Create PDF</h3>
-              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">Start clean A4 blank document instantly.</p>
-            </div>
-            <span class="text-[11px] font-semibold text-blue-600 mt-3 block">Use Now</span>
-          </div>
-
-          <div onclick="triggerFileInput('photo')" class="p-3 rounded-lg border border-slate-100 hover:border-cyan-200 hover:bg-cyan-50/50 cursor-pointer transition flex flex-col justify-between">
-            <div>
-              <div class="w-7 h-7 rounded bg-cyan-100 text-cyan-600 flex items-center justify-center text-xs mb-2">
-                <i class="fa-solid fa-crop-simple"></i>
-              </div>
-              <h3 class="text-xs font-bold text-slate-800">Photo Studio</h3>
-              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">Filters, crop, brightness and exposure.</p>
-            </div>
-            <span class="text-[11px] font-semibold text-cyan-600 mt-3 block">Use Now</span>
-          </div>
-
-          <div onclick="triggerFileInput('motion')" class="p-3 rounded-lg border border-slate-100 hover:border-purple-200 hover:bg-purple-50/50 cursor-pointer transition flex flex-col justify-between">
-            <div>
-              <div class="w-7 h-7 rounded bg-purple-100 text-purple-600 flex items-center justify-center text-xs mb-2">
-                <i class="fa-solid fa-film"></i>
-              </div>
-              <h3 class="text-xs font-bold text-slate-800">Motion Cut</h3>
-              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">Cut video clips, adjust speed and export.</p>
-            </div>
-            <span class="text-[11px] font-semibold text-purple-600 mt-3 block">Use Now</span>
-          </div>
-
-          <div onclick="triggerFileInput('all')" class="p-3 rounded-lg border-2 border-dashed border-slate-200 hover:border-blue-500 hover:bg-blue-50/30 cursor-pointer transition flex flex-col items-center justify-center text-center">
-            <i class="fa-regular fa-file text-slate-400 text-xl mb-1"></i>
-            <span class="text-xs font-bold text-slate-700">Open File</span>
-            <span class="text-[10px] text-slate-400">PDF, JPG, MP4</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Resume Box -->
-      <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
-        <div>
-          <h2 class="text-sm font-bold text-slate-800 mb-1">Always open in SwiftDoc</h2>
-          <p class="text-xs text-slate-500 leading-relaxed">
-            SwiftDoc Pro DC runs 100% locally in your browser. Lossless rendering and zero remote server storage.
-          </p>
-        </div>
-        <div class="mt-4 pt-3 border-t border-slate-100 flex flex-col gap-2">
-          <button id="btn-resume-doc" onclick="resumeActiveDoc()" class="w-full py-2 px-3 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-400 transition flex items-center justify-center gap-1.5">
-            <i class="fa-solid fa-rotate-right text-blue-600"></i>
-            <span>Resume Current Document</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- RECENT DOCUMENTS LIST -->
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mt-6">
       <div class="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 class="text-base font-bold text-slate-900">Recent</h2>
-          <p class="text-xs text-slate-400">Click any document below to open it directly in the editor</p>
+          <h2 class="text-base font-bold text-slate-900">Recent Documents & Projects</h2>
+          <p class="text-xs text-slate-400">Click to open in the respective editor</p>
         </div>
-        <div class="flex items-center space-x-2">
-          <!-- DELETE ALL RECENT BUTTON (COMO NO ADOBE) -->
-          <button id="btn-clear-recent" onclick="clearAllRecentFiles()" class="text-xs text-rose-600 hover:text-rose-700 font-medium px-3 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 transition flex items-center gap-1.5 shadow-sm">
-            <i class="fa-solid fa-trash-can text-rose-500"></i>
-            <span>Clear Recent Files</span>
-          </button>
-        </div>
+        <button onclick="clearAllRecentFiles()" id="btn-clear-recent" class="text-xs text-rose-600 hover:text-rose-700 font-medium px-3 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 transition flex items-center gap-1.5"><i class="fa-solid fa-trash-can"></i> Clear Recent</button>
       </div>
-
-      <!-- TABLE HEADER -->
       <div class="grid grid-cols-12 text-[11px] font-bold text-slate-400 uppercase tracking-wider px-4 py-2.5 bg-slate-50 border-b border-slate-200">
         <div class="col-span-7">Name</div>
         <div class="col-span-3">Opened</div>
         <div class="col-span-2 text-right">Size / Action</div>
       </div>
-
-      <!-- TABLE BODY -->
-      <div id="recent-list-container" class="divide-y divide-slate-100">
-        <!-- Renderizado dinamicamente pelo JS -->
-      </div>
+      <div id="recent-list-container" class="divide-y divide-slate-100"></div>
     </div>
   </div>
 
   <!-- ========================================== -->
-  <!-- SCREEN 2: PDF BOOKLETS ENGINE -->
+  <!-- SCREEN 2: PDF BOOKLETS ENGINE (REAL PDF VIEWER) -->
   <!-- ========================================== -->
-  <div id="screen-pdf" class="flex-1 flex overflow-hidden hidden bg-[#4a4f56]">
-    <!-- PDF Left Tools Sidebar -->
+  <div id="screen-pdf" class="flex-1 flex overflow-hidden hidden bg-[#353b43]">
     <aside class="w-12 bg-[#2d3239] border-r border-slate-700 flex flex-col items-center py-3 space-y-4 text-slate-400 flex-shrink-0">
-      <button title="Selection Tool" class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center text-blue-400 bg-slate-800">
-        <i class="fa-solid fa-arrow-pointer"></i>
-      </button>
-      <button title="Vector Edit Text" class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center">
-        <i class="fa-solid fa-font"></i>
-      </button>
-      <button title="Organize Pages" class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center">
-        <i class="fa-solid fa-table-cells-large"></i>
-      </button>
-      <button title="Sign & Stamp" class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center">
-        <i class="fa-solid fa-signature"></i>
-      </button>
-      <button title="Watermark" class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center">
-        <i class="fa-solid fa-stamp"></i>
-      </button>
+      <button class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center text-blue-400 bg-slate-800"><i class="fa-solid fa-arrow-pointer"></i></button>
+      <button class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center"><i class="fa-solid fa-font"></i></button>
+      <button class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center"><i class="fa-solid fa-signature"></i></button>
+    </aside>
+    <div class="flex-1 flex flex-col overflow-hidden p-4" id="pdf-viewport-container">
+      <!-- O iFrame do PDF entra aqui dinamicamente -->
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- SCREEN 3: PHOTO STUDIO ENGINE (PHOTOSHOP UI) -->
+  <!-- ========================================== -->
+  <div id="screen-photo" class="flex-1 flex overflow-hidden hidden bg-[#1e1e1e]">
+    <!-- Left Toolbar (Photoshop style) -->
+    <aside class="w-12 bg-[#252526] border-r border-[#333] flex flex-col items-center py-2 space-y-1 z-10 flex-shrink-0">
+      <div class="tool-btn active"><i class="fa-solid fa-arrows-up-down-left-right"></i></div>
+      <div class="tool-btn"><i class="fa-solid fa-vector-square"></i></div>
+      <div class="tool-btn" title="Lasso Tool"><i class="fa-solid fa-lasso"></i></div>
+      <div class="tool-btn" title="Magic Wand"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+      <div class="tool-btn"><i class="fa-solid fa-crop-simple"></i></div>
+      <div class="tool-btn" title="Eyedropper"><i class="fa-solid fa-eye-dropper"></i></div>
+      <div class="tool-btn" title="Healing Brush"><i class="fa-solid fa-band-aid"></i></div>
+      <div class="tool-btn" title="Brush Tool"><i class="fa-solid fa-paint-brush"></i></div>
+      <div class="tool-btn" title="Clone Stamp"><i class="fa-solid fa-stamp"></i></div>
+      <div class="tool-btn" title="Eraser"><i class="fa-solid fa-eraser"></i></div>
+      <div class="tool-btn" title="Text"><i class="fa-solid fa-t"></i></div>
       <div class="flex-1"></div>
-      <button onclick="triggerFileInput('pdf')" title="Open Another PDF" class="w-8 h-8 rounded hover:bg-blue-600 hover:text-white flex items-center justify-center">
-        <i class="fa-solid fa-folder-plus"></i>
-      </button>
+      <!-- Color Picker Mock -->
+      <div class="w-6 h-6 rounded-full bg-blue-500 border-2 border-white cursor-pointer mb-2"></div>
+      <div class="w-6 h-6 rounded-full bg-black border-2 border-[#555] cursor-pointer"></div>
     </aside>
 
-    <!-- PDF Main Stage -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-      <!-- PDF Sub Toolbar -->
-      <div class="h-10 bg-[#353b43] text-slate-300 flex items-center justify-between px-4 text-xs border-b border-slate-700">
-        <div class="flex items-center space-x-3">
-          <button class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded flex items-center gap-1.5 font-medium">
-            <i class="fa-solid fa-pen-to-square"></i> Edit
-          </button>
-          <button class="hover:bg-slate-700 px-2 py-1 rounded">T Add Text</button>
-          <button class="hover:bg-slate-700 px-2 py-1 rounded"><i class="fa-regular fa-image"></i> Add Image</button>
-          <button class="hover:bg-slate-700 px-2 py-1 rounded"><i class="fa-solid fa-crop"></i> Crop Pages</button>
-        </div>
-        <div class="flex items-center space-x-3 text-slate-300">
-          <button class="hover:text-white"><i class="fa-solid fa-chevron-left"></i></button>
-          <span class="bg-[#24272c] px-2 py-0.5 rounded border border-slate-600">1 / 2</span>
-          <button class="hover:text-white"><i class="fa-solid fa-chevron-right"></i></button>
-          <div class="h-3 w-px bg-slate-600"></div>
-          <button class="hover:text-white"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-          <span>100%</span>
-          <button class="hover:text-white"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-        </div>
-      </div>
-
-      <!-- PDF Canvas Viewport -->
-      <div class="flex-1 overflow-auto p-8 flex items-center justify-center" id="pdf-viewport-container">
-        <!-- Renderizado dinamicamente (Empty State ou Documento Aberto) -->
-      </div>
+    <!-- Center Canvas -->
+    <div class="flex-1 overflow-auto p-8 flex items-center justify-center relative" style="background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 20px 20px;">
+      <div id="photo-viewport-container" class="relative"></div>
     </div>
 
-    <!-- PDF Right Formatting Sidebar -->
-    <aside class="w-64 bg-white border-l border-slate-300 flex flex-col text-xs flex-shrink-0 shadow-lg">
-      <div class="p-3 bg-slate-100 border-b border-slate-200 font-bold text-slate-700 flex justify-between items-center">
-        <span>FORMATTING & FONTS</span>
-        <span class="text-[10px] text-blue-600">Vector Mode</span>
+    <!-- Right Panels (Layers & Properties) -->
+    <aside class="w-64 bg-[#252526] border-l border-[#333] flex flex-col text-xs text-slate-300 flex-shrink-0">
+      <!-- Adjustments -->
+      <div class="p-3 border-b border-[#333]">
+        <h3 class="font-bold text-white mb-3">Adjustments</h3>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between mb-1"><span>Brightness</span><span id="lbl-bright">0</span></div>
+            <input type="range" id="rng-bright" min="-100" max="100" value="0" oninput="applyPhotoFilters()" class="w-full">
+          </div>
+          <div>
+            <div class="flex justify-between mb-1"><span>Contrast</span><span id="lbl-contrast">0</span></div>
+            <input type="range" id="rng-contrast" min="-100" max="100" value="0" oninput="applyPhotoFilters()" class="w-full">
+          </div>
+          <div>
+            <div class="flex justify-between mb-1"><span>Saturation</span><span id="lbl-saturate">0</span></div>
+            <input type="range" id="rng-saturate" min="-100" max="100" value="0" oninput="applyPhotoFilters()" class="w-full">
+          </div>
+        </div>
       </div>
-      <div class="p-4 space-y-4 overflow-y-auto flex-1">
-        <div>
-          <label class="block text-slate-500 font-semibold mb-1">Font Family</label>
-          <select id="pdf-font-select" onchange="updateSelectedTextFont(this.value)" class="w-full border border-slate-300 rounded p-1.5 bg-slate-50 focus:border-blue-500 outline-none">
-            <option value="Connections">Connections</option>
-            <option value="ConnectionsBold">ConnectionsBold</option>
-            <option value="Nirmala UI">Nirmala UI</option>
-            <option value="Helvetica, Arial, sans-serif">Helvetica / Arial</option>
-          </select>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-slate-500 font-semibold mb-1">Size (pt)</label>
-            <input type="number" value="14" min="8" max="72" class="w-full border border-slate-300 rounded p-1.5 bg-slate-50">
-          </div>
-          <div>
-            <label class="block text-slate-500 font-semibold mb-1">Opacity (%)</label>
-            <input type="number" value="100" min="0" max="100" class="w-full border border-slate-300 rounded p-1.5 bg-slate-50">
+      <!-- Layers -->
+      <div class="flex-1 flex flex-col">
+        <div class="p-2 border-b border-[#333] font-bold text-white flex justify-between items-center">
+          <span>Layers</span>
+          <div class="space-x-2 text-slate-400">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <i class="fa-solid fa-bars"></i>
           </div>
         </div>
-
-        <div>
-          <label class="block text-slate-500 font-semibold mb-1">Letter Spacing (px)</label>
-          <input type="number" value="0.2" step="0.1" class="w-full border border-slate-300 rounded p-1.5 bg-slate-50">
-        </div>
-
-        <div class="pt-3 border-t border-slate-200">
-          <label class="block text-slate-500 font-semibold mb-1.5">Style</label>
-          <div class="flex gap-1">
-            <button class="flex-1 py-1 bg-slate-100 hover:bg-slate-200 border rounded font-bold">B</button>
-            <button class="flex-1 py-1 bg-slate-100 hover:bg-slate-200 border rounded italic font-serif">I</button>
-            <button class="flex-1 py-1 bg-slate-100 hover:bg-slate-200 border rounded underline">U</button>
+        <div class="flex-1 overflow-y-auto p-2 space-y-1 bg-[#1e1e1e]">
+          <div class="flex items-center p-2 bg-[#37373d] rounded cursor-pointer border border-[#007fd4]">
+            <i class="fa-solid fa-eye mr-2 text-slate-300"></i>
+            <div class="w-8 h-8 bg-white/10 mr-2 rounded flex items-center justify-center overflow-hidden">
+              <img id="layer-thumb" src="" class="w-full h-full object-cover">
+            </div>
+            <span class="font-medium text-white truncate" id="layer-name">Background</span>
+          </div>
+          <div class="flex items-center p-2 hover:bg-[#2d2d30] rounded cursor-pointer">
+            <i class="fa-solid fa-eye-slash mr-2 text-slate-500"></i>
+            <div class="w-8 h-8 bg-white/10 mr-2 rounded flex items-center justify-center text-[10px]">T</div>
+            <span class="text-slate-400">Text Layer 1</span>
           </div>
         </div>
-
-        <div class="pt-4 border-t border-slate-200">
-          <button onclick="downloadModifiedPDF()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded shadow transition">
-            Export Lossless PDF
-          </button>
+        <div class="p-2 border-t border-[#333] flex justify-between text-slate-400 text-sm">
+          <i class="fa-solid fa-link hover:text-white cursor-pointer"></i>
+          <i class="fa-solid fa-layer-group hover:text-white cursor-pointer"></i>
+          <i class="fa-solid fa-circle-half-stroke hover:text-white cursor-pointer"></i>
+          <i class="fa-solid fa-plus-square hover:text-white cursor-pointer"></i>
+          <i class="fa-solid fa-trash hover:text-white cursor-pointer"></i>
         </div>
       </div>
     </aside>
   </div>
 
   <!-- ========================================== -->
-  <!-- SCREEN 3: PHOTO STUDIO ENGINE -->
+  <!-- SCREEN 4: MOTION VIDEO ENGINE (CAPCUT UI) -->
   <!-- ========================================== -->
-  <div id="screen-photo" class="flex-1 flex overflow-hidden hidden bg-[#23272d]">
-    <div class="flex-1 flex flex-col overflow-hidden">
-      <!-- Photo Top Bar -->
-      <div class="h-10 bg-[#1c1f24] text-slate-300 flex items-center justify-between px-4 text-xs border-b border-slate-700">
-        <span id="photo-filename-label" class="font-medium text-slate-200">Photo Editor</span>
-        <div class="flex items-center space-x-2">
-          <button onclick="resetPhotoFilters()" class="px-2.5 py-1 rounded bg-slate-700 hover:bg-slate-600 text-white">Reset Filters</button>
-          <button onclick="downloadEditedPhoto()" class="px-3 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-white font-medium">Export Image</button>
-        </div>
-      </div>
-
-      <!-- Photo Canvas Area -->
-      <div class="flex-1 overflow-auto p-6 flex items-center justify-center" id="photo-viewport-container">
-        <!-- Renderizado dinamicamente -->
-      </div>
-    </div>
-
-    <!-- Photo Right Tools -->
-    <aside class="w-64 bg-[#1e2227] text-slate-300 border-l border-slate-700 flex flex-col text-xs flex-shrink-0 p-4 space-y-4">
-      <h3 class="font-bold text-white uppercase tracking-wider border-b border-slate-700 pb-2">Image Adjustments</h3>
+  <div id="screen-motion" class="flex-1 flex flex-col overflow-hidden hidden bg-[#0e1015]">
+    <!-- Superior: Player & Propriedades -->
+    <div class="flex-1 flex min-h-0">
       
-      <div>
-        <div class="flex justify-between mb-1"><span>Brightness</span><span id="lbl-bright">100%</span></div>
-        <input type="range" id="rng-bright" min="50" max="150" value="100" oninput="applyPhotoFilters()" class="w-full accent-cyan-400">
+      <!-- Player Central -->
+      <div class="flex-1 flex flex-col border-r border-[#262933]">
+        <div class="h-10 border-b border-[#262933] flex items-center justify-center text-xs text-slate-400 space-x-4">
+          <span class="text-white">Player</span>
+          <span>1920x1080</span>
+          <span>30 FPS</span>
+        </div>
+        <div class="flex-1 flex items-center justify-center bg-black p-4 relative" id="motion-viewport-container">
+          <!-- Video Tag vai aqui -->
+        </div>
+        <!-- Player Controls -->
+        <div class="h-12 bg-[#14171d] flex items-center justify-center space-x-6 text-slate-300">
+          <i class="fa-solid fa-backward-step cursor-pointer hover:text-white"></i>
+          <i class="fa-solid fa-play text-white text-xl cursor-pointer hover:text-blue-500" onclick="toggleMotionPlay()"></i>
+          <i class="fa-solid fa-forward-step cursor-pointer hover:text-white"></i>
+          <span class="text-xs font-mono" id="motion-time">00:00:00:00 / 00:00:00:00</span>
+        </div>
       </div>
 
-      <div>
-        <div class="flex justify-between mb-1"><span>Contrast</span><span id="lbl-contrast">100%</span></div>
-        <input type="range" id="rng-contrast" min="50" max="150" value="100" oninput="applyPhotoFilters()" class="w-full accent-cyan-400">
-      </div>
-
-      <div>
-        <div class="flex justify-between mb-1"><span>Saturation</span><span id="lbl-saturate">100%</span></div>
-        <input type="range" id="rng-saturate" min="0" max="200" value="100" oninput="applyPhotoFilters()" class="w-full accent-cyan-400">
-      </div>
-
-      <div class="pt-4 border-t border-slate-700">
-        <button onclick="triggerFileInput('photo')" class="w-full py-2 bg-slate-700 hover:bg-slate-600 text-white rounded font-medium transition">
-          Open Different Photo
-        </button>
-      </div>
-    </aside>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- SCREEN 4: MOTION VIDEO ENGINE -->
-  <!-- ========================================== -->
-  <div id="screen-motion" class="flex-1 flex flex-col overflow-hidden hidden bg-[#181a1f]">
-    <div class="h-10 bg-[#121417] text-slate-300 flex items-center justify-between px-4 text-xs border-b border-slate-800">
-      <span id="motion-filename-label" class="font-medium text-slate-200">Motion Cut Studio</span>
-      <div class="flex items-center space-x-2">
-        <button onclick="triggerFileInput('motion')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white">Load Video</button>
-      </div>
+      <!-- Detalhes do Clipe (Direita) -->
+      <aside class="w-72 bg-[#14171d] flex flex-col text-xs text-slate-300">
+        <div class="flex border-b border-[#262933]">
+          <button class="flex-1 py-3 text-white border-b-2 border-blue-500 font-medium">Video</button>
+          <button class="flex-1 py-3 text-slate-500 hover:text-white">Audio</button>
+          <button class="flex-1 py-3 text-slate-500 hover:text-white">Speed</button>
+          <button class="flex-1 py-3 text-slate-500 hover:text-white">Anim</button>
+        </div>
+        <div class="p-4 space-y-5 overflow-y-auto">
+          <!-- Transform -->
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="font-bold text-white">Basic</span>
+              <i class="fa-solid fa-rotate-left text-slate-500"></i>
+            </div>
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between mb-1"><span>Scale</span><span class="text-white">100%</span></div>
+                <input type="range" min="0" max="200" value="100" class="w-full accent-blue-500">
+              </div>
+              <div class="flex space-x-2">
+                <div class="flex-1">
+                  <div class="flex justify-between mb-1"><span>Position X</span></div>
+                  <input type="number" value="0" class="w-full bg-[#1a1d24] border border-[#2a2e37] rounded p-1 text-white text-center">
+                </div>
+                <div class="flex-1">
+                  <div class="flex justify-between mb-1"><span>Position Y</span></div>
+                  <input type="number" value="0" class="w-full bg-[#1a1d24] border border-[#2a2e37] rounded p-1 text-white text-center">
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span>Rotate</span><span class="text-white">0°</span></div>
+                <input type="range" min="-180" max="180" value="0" class="w-full accent-blue-500">
+              </div>
+            </div>
+          </div>
+          <!-- Blend -->
+          <div class="border-t border-[#262933] pt-4">
+            <span class="font-bold text-white mb-3 block">Blend</span>
+            <div class="flex justify-between mb-1"><span>Opacity</span><span class="text-white">100%</span></div>
+            <input type="range" min="0" max="100" value="100" class="w-full accent-blue-500">
+          </div>
+        </div>
+      </aside>
     </div>
 
-    <!-- Motion Player & Timeline -->
-    <div class="flex-1 flex flex-col items-center justify-center p-6 overflow-hidden" id="motion-viewport-container">
-      <!-- Renderizado dinamicamente -->
+    <!-- Inferior: Timeline Estilo CapCut -->
+    <div class="h-64 bg-[#14171d] border-t border-[#262933] flex flex-col">
+      <!-- Toolbar da Timeline -->
+      <div class="h-10 flex items-center px-4 justify-between text-slate-300 text-xs border-b border-[#262933]">
+        <div class="flex items-center space-x-4">
+          <button class="hover:text-white" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
+          <button class="hover:text-white" title="Redo"><i class="fa-solid fa-rotate-right"></i></button>
+          <div class="w-px h-4 bg-slate-700"></div>
+          <button class="hover:text-white flex items-center space-x-1" title="Split Clip (Cmd+B)"><i class="fa-solid fa-scissors"></i> <span>Split</span></button>
+          <button class="hover:text-white flex items-center space-x-1" title="Delete"><i class="fa-solid fa-trash"></i> <span>Delete</span></button>
+          <button class="hover:text-white"><i class="fa-solid fa-clone"></i> Copy</button>
+        </div>
+        <div class="flex items-center space-x-3">
+          <i class="fa-solid fa-magnifying-glass-minus"></i>
+          <input type="range" class="w-24 accent-blue-500">
+          <i class="fa-solid fa-magnifying-glass-plus"></i>
+        </div>
+      </div>
+      
+      <!-- Tracks Area -->
+      <div class="flex-1 overflow-auto relative">
+        <!-- Ruler -->
+        <div class="h-6 border-b border-[#2a2e37] bg-[#1a1d24] sticky top-0 z-10 flex">
+          <div class="w-16 flex-shrink-0 border-r border-[#2a2e37]"></div>
+          <div class="flex-1" style="background-image: linear-gradient(90deg, #333 1px, transparent 1px); background-size: 50px 100%;"></div>
+        </div>
+        
+        <!-- Track 1: Text -->
+        <div class="h-12 timeline-track flex items-center">
+          <div class="w-16 h-full flex-shrink-0 border-r border-[#2a2e37] flex items-center justify-center text-slate-500"><i class="fa-solid fa-t"></i></div>
+          <div class="relative flex-1 h-full py-1 px-4"></div>
+        </div>
+        
+        <!-- Track 2: Video (Main) -->
+        <div class="h-16 timeline-track flex items-center bg-[#1e222b]">
+          <div class="w-16 h-full flex-shrink-0 border-r border-[#2a2e37] flex flex-col items-center justify-center text-slate-500 space-y-1">
+            <i class="fa-solid fa-video text-white"></i>
+            <i class="fa-solid fa-eye text-[10px]"></i>
+          </div>
+          <div class="relative flex-1 h-full py-2 px-4" id="timeline-video-track">
+            <!-- Clipe inserido dinamicamente -->
+          </div>
+        </div>
+        
+        <!-- Track 3: Audio -->
+        <div class="h-14 timeline-track flex items-center">
+          <div class="w-16 h-full flex-shrink-0 border-r border-[#2a2e37] flex flex-col items-center justify-center text-slate-500 space-y-1">
+            <i class="fa-solid fa-music"></i>
+          </div>
+          <div class="relative flex-1 h-full py-2 px-4"></div>
+        </div>
+
+        <!-- Playhead Line -->
+        <div class="absolute top-0 bottom-0 left-32 w-px bg-white z-20 pointer-events-none">
+          <div class="absolute -top-3 -left-1.5 w-3 h-4 bg-white rounded-sm"></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- JAVASCRIPT STATE ENGINE -->
   <script>
-    // ESTADO GLOBAL DO APLICATIVO
     const AppState = {
       activeEngine: 'home',
       currentPdfFile: null,
       currentPhotoFile: null,
       currentMotionFile: null,
-      recentFiles: [
-        { id: 1, name: 'Booklets-PDF1_Part2.pdf', type: 'pdf', subtitle: 'PDF • Financial & Project Booklet', date: 'Today, 8:51 AM', size: '765 KB' },
-        { id: 2, name: 'scansmpl.pdf', type: 'pdf', subtitle: 'PDF • Commercial Invoice', date: 'Sep 17', size: '22 KB' },
-        { id: 3, name: 'sample(rotatetext).pdf', type: 'pdf', subtitle: 'PDF • Executive Contract', date: 'Sep 17', size: '66 KB' },
-        { id: 4, name: 'Red Minimalist Membership Form (1).pdf', type: 'pdf', subtitle: 'PDF • Official Certificate', date: 'Sep 16', size: '48 KB' },
-        { id: 5, name: 'Interior Design Product Catalog Template.pdf', type: 'pdf', subtitle: 'PDF • Blank A4 Workspace', date: 'Jul 30', size: '50 MB' }
-      ]
+      recentFiles: []
     };
 
-    // INICIALIZAÇÃO
-    window.addEventListener('DOMContentLoaded', () => {
-      renderRecentList();
-      renderPdfViewport();
-      renderPhotoViewport();
-      renderMotionViewport();
-    });
+    window.addEventListener('DOMContentLoaded', () => { renderRecentList(); });
 
-    // RENDERIZAR LISTA DE RECENTES
-    function renderRecentList() {
-      const container = document.getElementById('recent-list-container');
-      const clearBtn = document.getElementById('btn-clear-recent');
-
-      if (!AppState.recentFiles || AppState.recentFiles.length === 0) {
-        clearBtn.style.display = 'none';
-        container.innerHTML = `
-          <div class="py-12 text-center text-slate-400">
-            <i class="fa-regular fa-folder-open text-3xl mb-3 text-slate-300"></i>
-            <p class="text-sm font-medium text-slate-600">No recent documents</p>
-            <p class="text-xs text-slate-400 mt-1">Files you open will appear here for quick access</p>
-          </div>
-        `;
-        return;
-      }
-
-      clearBtn.style.display = 'flex';
-      container.innerHTML = AppState.recentFiles.map(file => {
-        let iconHtml = '<i class="fa-solid fa-file-pdf text-red-500 text-lg"></i>';
-        if (file.type === 'photo') iconHtml = '<i class="fa-solid fa-file-image text-cyan-500 text-lg"></i>';
-        if (file.type === 'motion') iconHtml = '<i class="fa-solid fa-file-video text-purple-500 text-lg"></i>';
-
-        return `
-          <div class="grid grid-cols-12 items-center px-4 py-3 hover:bg-slate-50 transition cursor-pointer group" onclick="openRecentFile(${file.id})">
-            <div class="col-span-7 flex items-center space-x-3">
-              <div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center flex-shrink-0 group-hover:bg-white shadow-xs">
-                ${iconHtml}
-              </div>
-              <div class="truncate">
-                <div class="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition truncate">${file.name}</div>
-                <div class="text-[11px] text-slate-400 truncate">${file.subtitle || 'Document'}</div>
-              </div>
-            </div>
-            <div class="col-span-3 text-xs text-slate-500">${file.date}</div>
-            <div class="col-span-2 text-right flex items-center justify-end space-x-2">
-              <span class="text-xs text-slate-400">${file.size}</span>
-              <button onclick="event.stopPropagation(); removeSingleRecent(${file.id})" title="Remove from recent" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 p-1 rounded transition">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // LIMPAR TODOS OS RECENTES (COMO NO ADOBE)
-    function clearAllRecentFiles() {
-      if (confirm('Deseja limpar todos os documentos da lista de recentes? (Seus arquivos originais no computador não serão apagados)')) {
-        AppState.recentFiles = [];
-        renderRecentList();
-      }
-    }
-
-    // REMOVER UM ÚNICO ITEM DO RECENTE
-    function removeSingleRecent(id) {
-      AppState.recentFiles = AppState.recentFiles.filter(f => f.id !== id);
-      renderRecentList();
-    }
-
-    // ABRIR ARQUIVO RECENTE
-    function openRecentFile(id) {
-      const file = AppState.recentFiles.find(f => f.id === id);
-      if (!file) return;
-
-      if (file.type === 'pdf') {
-        AppState.currentPdfFile = {
-          name: file.name,
-          title: file.name.replace('.pdf', ''),
-          date: '10/25/2026',
-          isCustom: false
-        };
-        switchEngine('pdf');
-      } else if (file.type === 'photo') {
-        switchEngine('photo');
-      } else {
-        switchEngine('motion');
-      }
-    }
-
-    // ALTERNAR ENGINES (Home, Booklets/PDF, Photo, Motion)
+    function showHomeScreen() { switchEngine('home'); }
     function switchEngine(engine) {
       AppState.activeEngine = engine;
-
-      // Ocultar todas as telas
       ['home', 'pdf', 'photo', 'motion'].forEach(e => {
         document.getElementById(`screen-${e}`).classList.add('hidden');
-        const tabBtn = document.getElementById(`tab-${e}`);
-        if (tabBtn) {
-          tabBtn.className = "px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5";
-        }
+        const btn = document.getElementById(`tab-${e}`);
+        if(btn) btn.className = "px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5";
       });
 
-      // Ativar tela selecionada
-      const activeScreen = document.getElementById(`screen-${engine}`);
-      activeScreen.classList.remove('hidden');
-
-      const activeTab = document.getElementById(`tab-${engine}`);
-      if (activeTab) {
-        if (engine === 'home') activeTab.className = "px-3 py-1 rounded-md text-xs font-medium text-white bg-blue-600 transition flex items-center gap-1.5 shadow-sm";
-        else if (engine === 'pdf') activeTab.className = "px-3 py-1 rounded-md text-xs font-medium text-white bg-red-700 transition flex items-center gap-1.5 shadow-sm";
-        else if (engine === 'photo') activeTab.className = "px-3 py-1 rounded-md text-xs font-medium text-white bg-cyan-700 transition flex items-center gap-1.5 shadow-sm";
-        else if (engine === 'motion') activeTab.className = "px-3 py-1 rounded-md text-xs font-medium text-white bg-purple-700 transition flex items-center gap-1.5 shadow-sm";
+      document.getElementById(`screen-${engine}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-${engine}`);
+      
+      if(activeBtn) {
+        let color = engine==='home'?'bg-blue-600': engine==='pdf'?'bg-red-700': engine==='photo'?'bg-cyan-700':'bg-purple-700';
+        activeBtn.className = `px-3 py-1 rounded-md text-xs font-medium text-white ${color} transition flex items-center gap-1.5 shadow-sm`;
       }
 
-      // Re-renderizar viewport da engine ativa
       if (engine === 'pdf') renderPdfViewport();
       if (engine === 'photo') renderPhotoViewport();
       if (engine === 'motion') renderMotionViewport();
     }
 
-    function showHomeScreen() {
-      switchEngine('home');
-    }
-
-    // ==========================================
-    // SELETOR E CARREGAMENTO DE ARQUIVOS
-    // ==========================================
-    let targetedEngineFilter = 'all';
-
-    function triggerFileInput(filter = 'all') {
-      targetedEngineFilter = filter;
+    function triggerFileInput(filter) {
       const input = document.getElementById('universalFileInput');
-      if (filter === 'pdf') input.accept = '.pdf';
-      else if (filter === 'photo') input.accept = 'image/*';
-      else if (filter === 'motion') input.accept = 'video/*';
-      else input.accept = '.pdf,image/*,video/*';
+      input.accept = filter === 'pdf' ? '.pdf' : filter === 'photo' ? 'image/*' : filter === 'motion' ? 'video/*' : '.pdf,image/*,video/*';
       input.click();
     }
 
@@ -550,316 +353,125 @@
       if (!file) return;
 
       const fileName = file.name;
-      const fileExt = fileName.split('.').pop().toLowerCase();
       const fileSize = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+      const fileUrl = URL.createObjectURL(file);
 
-      // Identificar o tipo do arquivo
       if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          AppState.currentPhotoFile = {
-            name: fileName,
-            src: evt.target.result
-          };
-          addFileToRecent(fileName, 'photo', 'Photo • Custom Image', fileSize);
-          switchEngine('photo');
-        };
-        reader.readAsDataURL(file);
+        AppState.currentPhotoFile = { name: fileName, url: fileUrl };
+        addFileToRecent(fileName, 'photo', 'Custom Image', fileSize);
+        switchEngine('photo');
       } else if (file.type.startsWith('video/')) {
-        const fileUrl = URL.createObjectURL(file);
-        AppState.currentMotionFile = {
-          name: fileName,
-          url: fileUrl
-        };
-        addFileToRecent(fileName, 'motion', 'Motion • Video Clip', fileSize);
+        AppState.currentMotionFile = { name: fileName, url: fileUrl };
+        addFileToRecent(fileName, 'motion', 'Video Clip', fileSize);
         switchEngine('motion');
       } else {
-        // PDF ou outro documento
-        AppState.currentPdfFile = {
-          name: fileName,
-          title: fileName.replace('.pdf', ''),
-          date: 'Just now',
-          isCustom: true
-        };
-        addFileToRecent(fileName, 'pdf', 'PDF • Imported Document', fileSize);
+        // PDF REAL
+        AppState.currentPdfFile = { name: fileName, url: fileUrl };
+        addFileToRecent(fileName, 'pdf', 'PDF Document', fileSize);
         switchEngine('pdf');
       }
-
-      // Resetar input para permitir reabertura do mesmo arquivo
       e.target.value = '';
     }
 
-    function addFileToRecent(name, type, subtitle, size) {
-      // Evitar duplicatas no topo
-      AppState.recentFiles = AppState.recentFiles.filter(f => f.name !== name);
-      AppState.recentFiles.unshift({
-        id: Date.now(),
-        name: name,
-        type: type,
-        subtitle: subtitle,
-        date: 'Just now',
-        size: size
-      });
+    function addFileToRecent(name, type, sub, size) {
+      AppState.recentFiles.unshift({ id: Date.now(), name, type, sub, size, date: 'Just now' });
       renderRecentList();
     }
 
-    function createNewPDF() {
-      AppState.currentPdfFile = {
-        name: 'Untitled-Blank-Document.pdf',
-        title: 'NOVO DOCUMENTO EM BRANCO',
-        date: 'Just now',
-        isCustom: true,
-        isBlank: true
-      };
-      addFileToRecent('Untitled-Blank-Document.pdf', 'pdf', 'PDF • Blank Workspace', '12 KB');
-      switchEngine('pdf');
+    function clearAllRecentFiles() {
+      if(confirm('Limpar lista de recentes?')) { AppState.recentFiles = []; renderRecentList(); }
     }
 
-    function resumeActiveDoc() {
-      if (AppState.currentPdfFile) switchEngine('pdf');
-      else if (AppState.currentPhotoFile) switchEngine('photo');
-      else if (AppState.currentMotionFile) switchEngine('motion');
-      else {
-        // Se nenhum arquivo estiver ativo, abre o primeiro dos recentes
-        if (AppState.recentFiles.length > 0) openRecentFile(AppState.recentFiles[0].id);
-        else triggerFileInput('all');
+    function renderRecentList() {
+      const container = document.getElementById('recent-list-container');
+      if (AppState.recentFiles.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center text-slate-400">Nenhum documento recente</div>`;
+        return;
       }
+      container.innerHTML = AppState.recentFiles.map(f => {
+        let ic = f.type==='pdf'?'text-red-500 fa-file-pdf':f.type==='photo'?'text-cyan-500 fa-file-image':'text-purple-500 fa-file-video';
+        return `
+          <div class="grid grid-cols-12 px-4 py-3 hover:bg-slate-50 cursor-pointer text-xs items-center" onclick="openRecent(${f.id})">
+            <div class="col-span-7 flex items-center space-x-3"><i class="fa-solid ${ic} text-lg"></i> <span class="font-bold text-slate-800">${f.name}</span></div>
+            <div class="col-span-3 text-slate-500">${f.date}</div>
+            <div class="col-span-2 text-right text-slate-400">${f.size}</div>
+          </div>
+        `;
+      }).join('');
     }
 
-    function closeCurrentDocument() {
-      if (AppState.activeEngine === 'pdf') AppState.currentPdfFile = null;
-      if (AppState.activeEngine === 'photo') AppState.currentPhotoFile = null;
-      if (AppState.activeEngine === 'motion') AppState.currentMotionFile = null;
-      showHomeScreen();
-    }
-
-    // ==========================================
-    // RENDERIZADORES DE VIEWPORT (SEM ABERTURA FORÇADA)
-    // ==========================================
-
-    // 1. PDF VIEWPORT
+    // PDF REAL (Usando embed/iframe)
     function renderPdfViewport() {
       const container = document.getElementById('pdf-viewport-container');
-      const tabName = document.getElementById('tab-pdf-name');
-
       if (!AppState.currentPdfFile) {
-        tabName.textContent = 'Booklets (PDF)';
-        container.innerHTML = `
-          <div class="max-w-md w-full bg-[#353b43] border-2 border-dashed border-slate-600 rounded-2xl p-10 text-center text-slate-300 shadow-2xl">
-            <div class="w-16 h-16 bg-red-600/20 text-red-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-              <i class="fa-solid fa-file-pdf"></i>
-            </div>
-            <h3 class="text-base font-bold text-white mb-2">Nenhum documento PDF aberto</h3>
-            <p class="text-xs text-slate-400 mb-6 leading-relaxed">
-              Selecione um arquivo PDF do seu computador ou inicie um documento em branco para começar a editar.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-3 justify-center">
-              <button onclick="triggerFileInput('pdf')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow">
-                <i class="fa-solid fa-folder-open"></i> Abrir Arquivo PDF
-              </button>
-              <button onclick="createNewPDF()" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-plus"></i> Novo em Branco
-              </button>
-            </div>
-          </div>
-        `;
+        container.innerHTML = `<div class="flex-1 flex flex-col items-center justify-center text-slate-400 bg-[#2d3239] rounded shadow-inner"><i class="fa-solid fa-file-pdf text-4xl mb-4"></i><p>Abra um arquivo PDF do seu computador para começar.</p><button onclick="triggerFileInput('pdf')" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Abrir Arquivo</button></div>`;
         return;
       }
-
-      tabName.textContent = AppState.currentPdfFile.name;
-
-      if (AppState.currentPdfFile.isBlank) {
-        container.innerHTML = `
-          <div class="w-[794px] min-h-[1123px] bg-white canvas-card p-14 text-slate-800 relative rounded-sm" contenteditable="true" spellcheck="false">
-            <h1 class="text-2xl font-bold font-connections-bold mb-4 text-slate-900 outline-none" contenteditable="true">Documento em Branco</h1>
-            <p class="text-sm font-connections leading-relaxed text-slate-700 outline-none" contenteditable="true">
-              Clique em qualquer ponto desta folha A4 para redigir ou colar conteúdo diretamente. A edição é em vetor de alta definição.
-            </p>
-          </div>
-        `;
-        return;
-      }
-
-      // Folha com documento de exemplo/carregado
-      container.innerHTML = `
-        <div class="w-[794px] min-h-[1123px] bg-white canvas-card p-12 text-slate-800 relative rounded-sm flex flex-col justify-between">
-          <div>
-            <!-- Banner Header -->
-            <div class="bg-[#1f2937] text-white p-6 rounded-lg mb-8 shadow-sm">
-              <h2 id="pdf-editable-title" class="text-xl font-black tracking-tight font-connections-bold outline-none border-b border-transparent hover:border-blue-400" contenteditable="true">
-                SWIFTDOC — ${AppState.currentPdfFile.title.toUpperCase()}
-              </h2>
-              <p class="text-xs text-slate-300 mt-1 font-connections">Click any text line to edit content, enable Bold (B), or apply Connections / Nirmala UI</p>
-            </div>
-
-            <!-- Section 1 -->
-            <div class="mb-6 border-b border-slate-200 pb-4">
-              <h3 class="text-sm font-bold text-slate-900 mb-2 font-connections-bold">1. Account Holder Identification & Balance Overview</h3>
-              <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-1 text-xs">
-                <div><span class="font-semibold text-slate-600">Document Name:</span> <span contenteditable="true" class="outline-none">${AppState.currentPdfFile.name}</span></div>
-                <div><span class="font-semibold text-slate-600">Total Available Balance:</span> <span contenteditable="true" class="outline-none font-bold text-emerald-600">$14,850.00 (Updated: ${AppState.currentPdfFile.date})</span></div>
-              </div>
-            </div>
-
-            <!-- Callout -->
-            <div class="p-4 rounded-lg bg-blue-50 border border-blue-200 mb-6 text-xs text-blue-950">
-              <h4 class="font-bold mb-1 font-connections-bold">SWIFTDOC PRO STUDIO + CONNECTIONS, CONNECTIONSBOLD & NIRMALA UI</h4>
-              <p class="font-connections mb-1">• Choose any SwiftDoc PDF tool from the left sidebar (Organize, Optimize, Sign, Scan, Export)</p>
-              <p class="font-connections">• Select Connections, ConnectionsBold, or Nirmala UI and enter exact numeric spacing & opacity</p>
-              <p class="font-connections">• Document Status: Ready for lossless editing with zero quality degradation</p>
-            </div>
-
-            <!-- Table -->
-            <div class="mb-6">
-              <h3 class="text-sm font-bold text-slate-900 mb-2 font-connections-bold">2. Recent Transactions & Statement Entries</h3>
-              <table class="w-full text-xs text-left border border-slate-300">
-                <thead class="bg-[#212731] text-white font-semibold">
-                  <tr>
-                    <th class="p-2 border-r border-slate-600">Date / Ref</th>
-                    <th class="p-2 border-r border-slate-600">Transaction Description</th>
-                    <th class="p-2 text-right">Amount (USD)</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-200">
-                  <tr>
-                    <td class="p-2 font-mono">10/20/2026</td>
-                    <td class="p-2" contenteditable="true">ACH DIRECT DEPOSIT TRANSFER</td>
-                    <td class="p-2 text-right font-bold text-emerald-600" contenteditable="true">$5,400.00</td>
-                  </tr>
-                  <tr>
-                    <td class="p-2 font-mono">10/22/2026</td>
-                    <td class="p-2" contenteditable="true">INTERNATIONAL VENDOR WIRE PAYMENT</td>
-                    <td class="p-2 text-right font-bold text-rose-600" contenteditable="true">-$1,250.00</td>
-                  </tr>
-                  <tr>
-                    <td class="p-2 font-mono">10/25/2026</td>
-                    <td class="p-2" contenteditable="true">MONTHLY TREASURY YIELD CREDIT</td>
-                    <td class="p-2 text-right font-bold text-emerald-600" contenteditable="true">$700.00</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="pt-6 border-t border-slate-200 flex justify-between items-center text-[11px] text-slate-400">
-            <span>SwiftDoc Vector Rendering DC Engine</span>
-            <span>Page 1 of 2</span>
-          </div>
-        </div>
-      `;
+      document.getElementById('tab-pdf-name').textContent = AppState.currentPdfFile.name;
+      // Usando iFrame para renderizar o PDF real do usuário no navegador!
+      container.innerHTML = `<iframe src="${AppState.currentPdfFile.url}#view=FitH" class="w-full h-full border-0 rounded-lg shadow-2xl bg-white"></iframe>`;
     }
 
-    // 2. PHOTO VIEWPORT
+    // PHOTO VIEWPORT (Com Layers e Filtros css basicos)
     function renderPhotoViewport() {
       const container = document.getElementById('photo-viewport-container');
-      const label = document.getElementById('photo-filename-label');
-
       if (!AppState.currentPhotoFile) {
-        label.textContent = 'Photo Studio';
-        container.innerHTML = `
-          <div class="max-w-md w-full bg-[#1c1f24] border-2 border-dashed border-slate-700 rounded-2xl p-10 text-center text-slate-300 shadow-2xl">
-            <div class="w-16 h-16 bg-cyan-600/20 text-cyan-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-              <i class="fa-solid fa-image"></i>
-            </div>
-            <h3 class="text-base font-bold text-white mb-2">Nenhuma foto selecionada</h3>
-            <p class="text-xs text-slate-400 mb-6 leading-relaxed">
-              Abra uma imagem JPG, PNG ou WebP para cortar, ajustar cores, contraste e aplicar filtros.
-            </p>
-            <button onclick="triggerFileInput('photo')" class="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-bold transition inline-flex items-center gap-2 shadow">
-              <i class="fa-solid fa-folder-open"></i> Selecionar Imagem
-            </button>
-          </div>
-        `;
+        container.innerHTML = `<div class="text-center text-slate-400"><p>Nenhuma imagem</p><button onclick="triggerFileInput('photo')" class="mt-4 bg-cyan-600 text-white px-4 py-2 rounded">Importar Foto</button></div>`;
         return;
       }
-
-      label.textContent = `Photo: ${AppState.currentPhotoFile.name}`;
-      container.innerHTML = `
-        <div class="max-w-3xl max-h-full flex items-center justify-center">
-          <img id="active-photo-img" src="${AppState.currentPhotoFile.src}" class="max-h-[75vh] max-w-full object-contain rounded-lg shadow-2xl border border-slate-700">
-        </div>
-      `;
+      document.getElementById('tab-photo-name').textContent = AppState.currentPhotoFile.name;
+      document.getElementById('layer-name').textContent = AppState.currentPhotoFile.name;
+      document.getElementById('layer-thumb').src = AppState.currentPhotoFile.url;
+      container.innerHTML = `<img id="active-photo-img" src="${AppState.currentPhotoFile.url}" class="max-w-full max-h-[80vh] shadow-2xl border border-[#444] rounded">`;
     }
 
-    // 3. MOTION VIEWPORT
-    function renderMotionViewport() {
-      const container = document.getElementById('motion-viewport-container');
-      const label = document.getElementById('motion-filename-label');
-
-      if (!AppState.currentMotionFile) {
-        label.textContent = 'Motion Cut Studio';
-        container.innerHTML = `
-          <div class="max-w-md w-full bg-[#121417] border-2 border-dashed border-slate-800 rounded-2xl p-10 text-center text-slate-300 shadow-2xl">
-            <div class="w-16 h-16 bg-purple-600/20 text-purple-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-              <i class="fa-solid fa-film"></i>
-            </div>
-            <h3 class="text-base font-bold text-white mb-2">Nenhum vídeo carregado</h3>
-            <p class="text-xs text-slate-400 mb-6 leading-relaxed">
-              Carregue um arquivo de vídeo MP4 ou WebM para recortar partes, silenciar áudio ou exportar frames.
-            </p>
-            <button onclick="triggerFileInput('motion')" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-bold transition inline-flex items-center gap-2 shadow">
-              <i class="fa-solid fa-folder-open"></i> Selecionar Vídeo
-            </button>
-          </div>
-        `;
-        return;
-      }
-
-      label.textContent = `Motion: ${AppState.currentMotionFile.name}`;
-      container.innerHTML = `
-        <div class="w-full max-w-4xl flex flex-col items-center">
-          <video id="active-motion-video" src="${AppState.currentMotionFile.url}" controls class="max-h-[60vh] rounded-lg shadow-2xl border border-slate-800 mb-4 bg-black"></video>
-          <div class="w-full bg-[#121417] p-4 rounded-xl border border-slate-800 flex items-center justify-between text-xs text-slate-300">
-            <div class="flex items-center space-x-3">
-              <button onclick="document.getElementById('active-motion-video').play()" class="p-2 hover:text-white"><i class="fa-solid fa-play"></i></button>
-              <button onclick="document.getElementById('active-motion-video').pause()" class="p-2 hover:text-white"><i class="fa-solid fa-pause"></i></button>
-              <span>Controles nativos do leitor ativados</span>
-            </div>
-            <button onclick="alert('Vídeo pronto para reprodução local.')" class="px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded font-medium">Export Clip</button>
-          </div>
-        </div>
-      `;
-    }
-
-    // AJUSTES DE FOTO
     function applyPhotoFilters() {
       const img = document.getElementById('active-photo-img');
       if (!img) return;
       const b = document.getElementById('rng-bright').value;
       const c = document.getElementById('rng-contrast').value;
       const s = document.getElementById('rng-saturate').value;
+      
+      document.getElementById('lbl-bright').textContent = b;
+      document.getElementById('lbl-contrast').textContent = c;
+      document.getElementById('lbl-saturate').textContent = s;
 
-      document.getElementById('lbl-bright').textContent = b + '%';
-      document.getElementById('lbl-contrast').textContent = c + '%';
-      document.getElementById('lbl-saturate').textContent = s + '%';
-
-      img.style.filter = `brightness(${b}%) contrast(${c}%) saturate(${s}%)`;
+      // CSS Filters mapped correctly (-100 to 100) -> (0 to 200%)
+      const bright = parseInt(b) + 100;
+      const cont = parseInt(c) + 100;
+      const sat = parseInt(s) + 100;
+      
+      img.style.filter = `brightness(${bright}%) contrast(${cont}%) saturate(${sat}%)`;
     }
 
-    function resetPhotoFilters() {
-      document.getElementById('rng-bright').value = 100;
-      document.getElementById('rng-contrast').value = 100;
-      document.getElementById('rng-saturate').value = 100;
-      applyPhotoFilters();
-    }
-
-    function downloadEditedPhoto() {
-      alert('Foto pronta para download direto na sua máquina.');
-    }
-
-    function updateSelectedTextFont(fontFamily) {
-      const activeEl = document.activeElement;
-      if (activeEl && activeEl.isContentEditable) {
-        activeEl.style.fontFamily = fontFamily;
+    // MOTION VIEWPORT
+    function renderMotionViewport() {
+      const container = document.getElementById('motion-viewport-container');
+      const track = document.getElementById('timeline-video-track');
+      
+      if (!AppState.currentMotionFile) {
+        container.innerHTML = `<div class="text-center text-slate-500"><i class="fa-solid fa-film text-4xl mb-4 text-slate-700"></i><p>Importe mídia para começar a editar</p><button onclick="triggerFileInput('motion')" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold">Importar Arquivo</button></div>`;
+        track.innerHTML = '';
+        return;
       }
+      document.getElementById('tab-motion-name').textContent = AppState.currentMotionFile.name;
+      container.innerHTML = `<video id="motion-vid" src="${AppState.currentMotionFile.url}" class="max-w-full max-h-full"></video>`;
+      
+      // Criar clipe fictício na timeline
+      track.innerHTML = `
+        <div class="h-full timeline-clip flex items-center px-2 text-[10px] font-bold overflow-hidden cursor-pointer" style="width: 60%;">
+          <div class="h-full w-2 bg-white/20 mr-2 rounded-sm cursor-ew-resize"></div> <!-- Puxador de trim -->
+          <span class="truncate flex-1">${AppState.currentMotionFile.name}</span>
+          <div class="h-full w-2 bg-white/20 ml-2 rounded-sm cursor-ew-resize"></div>
+        </div>
+      `;
     }
 
-    function downloadModifiedPDF() {
-      alert('Documento PDF exportado com sucesso no padrão vetorial.');
-    }
-
-    function toggleTheme() {
-      document.body.classList.toggle('dark');
+    function toggleMotionPlay() {
+      const vid = document.getElementById('motion-vid');
+      if(!vid) return;
+      if(vid.paused) vid.play();
+      else vid.pause();
     }
   </script>
 </body>
