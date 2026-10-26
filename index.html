@@ -17,14 +17,21 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
 
-    /* Estilos da Timeline do CapCut */
-    .timeline-track { background: #1a1d24; border-top: 1px solid #2a2e37; border-bottom: 1px solid #000; position: relative; }
-    .timeline-clip { background: #3b82f6; border-radius: 4px; border: 1px solid #60a5fa; color: white; text-shadow: 0 1px 1px rgba(0,0,0,0.5); }
-    .timeline-audio { background: #10b981; border: 1px solid #34d399; }
+    /* Custom UI Elements */
+    .ps-tool-btn { width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; border-radius: 4px; color: #b3b3b3; font-size: 14px; margin: 1px 0; cursor: pointer; }
+    .ps-tool-btn:hover, .ps-tool-btn.active { background: #37373d; color: #ffffff; }
     
-    /* Menu Lateral Estilo Photoshop */
-    .tool-btn { width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; border-radius: 6px; color: #94a3b8; transition: all 0.2s; }
-    .tool-btn:hover, .tool-btn.active { background: #3b82f6; color: white; }
+    .cc-tab { color: #8f959e; cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid transparent; font-weight: 500; font-size: 12px;}
+    .cc-tab.active { color: #e5e6eb; border-bottom-color: #3b82f6; }
+    
+    .cc-menu-item { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 64px; color: #8f959e; font-size: 10px; cursor: pointer; transition: all 0.2s; border-radius: 6px;}
+    .cc-menu-item:hover, .cc-menu-item.active { background: #2a2e37; color: #e5e6eb; }
+    .cc-menu-item i { font-size: 18px; margin-bottom: 6px; }
+
+    .ps-panel-header { font-size: 11px; font-weight: 600; color: #cccccc; padding: 6px 12px; background: #252526; border-bottom: 1px solid #333333; display: flex; justify-content: space-between; align-items: center;}
+    
+    input[type=range] { -webkit-appearance: none; background: #3b3b40; height: 4px; border-radius: 2px; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #ffffff; cursor: pointer; }
   </style>
 </head>
 <body class="bg-[#f3f4f6] text-slate-800 antialiased selection:bg-blue-600 selection:text-white h-screen flex flex-col font-sans overflow-hidden">
@@ -45,9 +52,9 @@
     <!-- CENTER ENGINE TABS -->
     <div class="flex items-center bg-[#1e2227] p-0.5 rounded-lg border border-slate-700">
       <button id="tab-home" onclick="showHomeScreen()" class="px-3 py-1 rounded-md text-xs font-medium text-white bg-blue-600 shadow-sm flex items-center gap-1.5"><i class="fa-solid fa-house"></i> Home</button>
-      <button id="tab-pdf" onclick="switchEngine('pdf')" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5"><i class="fa-solid fa-file-pdf text-red-500"></i> <span id="tab-pdf-name">Booklets (PDF)</span></button>
-      <button id="tab-photo" onclick="switchEngine('photo')" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5"><i class="fa-solid fa-image text-cyan-400"></i> <span id="tab-photo-name">Photo</span></button>
-      <button id="tab-motion" onclick="switchEngine('motion')" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5"><i class="fa-solid fa-play text-purple-400"></i> <span id="tab-motion-name">Motion</span></button>
+      <button id="tab-pdf" onclick="switchEngine('pdf')" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5"><i class="fa-solid fa-file-pdf text-red-500"></i> Booklets (PDF)</button>
+      <button id="tab-photo" onclick="switchEngine('photo')" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5"><i class="fa-solid fa-image text-cyan-400"></i> Photo Studio</button>
+      <button id="tab-motion" onclick="switchEngine('motion')" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition flex items-center gap-1.5"><i class="fa-solid fa-film text-purple-400"></i> Motion Cut</button>
     </div>
 
     <!-- RIGHT QUICK ACTIONS -->
@@ -60,17 +67,16 @@
   <input type="file" id="universalFileInput" class="hidden" accept=".pdf,image/*,video/*" onchange="handleUniversalFileSelect(event)">
 
   <!-- ========================================== -->
-  <!-- SCREEN 1: HOME & RECENT DASHBOARD -->
+  <!-- SCREEN 1: HOME -->
   <!-- ========================================== -->
   <div id="screen-home" class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 max-w-7xl mx-auto w-full">
-    <!-- RECENT DOCUMENTS LIST -->
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mt-6">
       <div class="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 class="text-base font-bold text-slate-900">Recent Documents & Projects</h2>
-          <p class="text-xs text-slate-400">Click to open in the respective editor</p>
+          <p class="text-xs text-slate-400">Click to open in the respective advanced editor</p>
         </div>
-        <button onclick="clearAllRecentFiles()" id="btn-clear-recent" class="text-xs text-rose-600 hover:text-rose-700 font-medium px-3 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 transition flex items-center gap-1.5"><i class="fa-solid fa-trash-can"></i> Clear Recent</button>
+        <button onclick="clearAllRecentFiles()" class="text-xs text-rose-600 hover:text-rose-700 font-medium px-3 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 transition flex items-center gap-1.5"><i class="fa-solid fa-trash-can"></i> Clear Recent</button>
       </div>
       <div class="grid grid-cols-12 text-[11px] font-bold text-slate-400 uppercase tracking-wider px-4 py-2.5 bg-slate-50 border-b border-slate-200">
         <div class="col-span-7">Name</div>
@@ -82,242 +88,358 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- SCREEN 2: PDF BOOKLETS ENGINE (REAL PDF VIEWER) -->
+  <!-- SCREEN 2: PDF ENGINE -->
   <!-- ========================================== -->
   <div id="screen-pdf" class="flex-1 flex overflow-hidden hidden bg-[#353b43]">
     <aside class="w-12 bg-[#2d3239] border-r border-slate-700 flex flex-col items-center py-3 space-y-4 text-slate-400 flex-shrink-0">
       <button class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center text-blue-400 bg-slate-800"><i class="fa-solid fa-arrow-pointer"></i></button>
       <button class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center"><i class="fa-solid fa-font"></i></button>
-      <button class="w-8 h-8 rounded hover:bg-slate-700 hover:text-white flex items-center justify-center"><i class="fa-solid fa-signature"></i></button>
     </aside>
-    <div class="flex-1 flex flex-col overflow-hidden p-4" id="pdf-viewport-container">
-      <!-- O iFrame do PDF entra aqui dinamicamente -->
-    </div>
+    <div class="flex-1 flex flex-col overflow-hidden p-4" id="pdf-viewport-container"></div>
   </div>
 
   <!-- ========================================== -->
-  <!-- SCREEN 3: PHOTO STUDIO ENGINE (PHOTOSHOP UI) -->
+  <!-- SCREEN 3: PHOTO STUDIO (FULL PHOTOSHOP UI) -->
   <!-- ========================================== -->
-  <div id="screen-photo" class="flex-1 flex overflow-hidden hidden bg-[#1e1e1e]">
-    <!-- Left Toolbar (Photoshop style) -->
-    <aside class="w-12 bg-[#252526] border-r border-[#333] flex flex-col items-center py-2 space-y-1 z-10 flex-shrink-0">
-      <div class="tool-btn active"><i class="fa-solid fa-arrows-up-down-left-right"></i></div>
-      <div class="tool-btn"><i class="fa-solid fa-vector-square"></i></div>
-      <div class="tool-btn" title="Lasso Tool"><i class="fa-solid fa-lasso"></i></div>
-      <div class="tool-btn" title="Magic Wand"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-      <div class="tool-btn"><i class="fa-solid fa-crop-simple"></i></div>
-      <div class="tool-btn" title="Eyedropper"><i class="fa-solid fa-eye-dropper"></i></div>
-      <div class="tool-btn" title="Healing Brush"><i class="fa-solid fa-band-aid"></i></div>
-      <div class="tool-btn" title="Brush Tool"><i class="fa-solid fa-paint-brush"></i></div>
-      <div class="tool-btn" title="Clone Stamp"><i class="fa-solid fa-stamp"></i></div>
-      <div class="tool-btn" title="Eraser"><i class="fa-solid fa-eraser"></i></div>
-      <div class="tool-btn" title="Text"><i class="fa-solid fa-t"></i></div>
+  <div id="screen-photo" class="flex-1 flex flex-col overflow-hidden hidden bg-[#1e1e1e]">
+    
+    <!-- Top Options Bar -->
+    <div class="h-9 bg-[#252526] border-b border-[#333] flex items-center px-2 space-x-4 text-[11px] text-[#cccccc] flex-shrink-0">
+      <div class="flex items-center space-x-1 border-r border-[#444] pr-3">
+        <i class="fa-solid fa-paint-brush"></i>
+        <i class="fa-solid fa-caret-down text-[8px] ml-1"></i>
+      </div>
+      <div class="flex items-center space-x-2 border-r border-[#444] pr-3">
+        <div class="flex items-center bg-[#3c3c3c] px-2 py-1 rounded">
+          <span class="mr-2">Size:</span>
+          <span class="font-bold">45 px</span>
+          <i class="fa-solid fa-caret-down text-[8px] ml-2"></i>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2 border-r border-[#444] pr-3">
+        <span>Mode:</span>
+        <select class="bg-[#3c3c3c] border-none text-white outline-none rounded px-1"><option>Normal</option><option>Multiply</option><option>Screen</option></select>
+      </div>
+      <div class="flex items-center space-x-2 border-r border-[#444] pr-3">
+        <span>Opacity:</span>
+        <span class="font-bold">100%</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span>Flow:</span>
+        <span class="font-bold">100%</span>
+      </div>
       <div class="flex-1"></div>
-      <!-- Color Picker Mock -->
-      <div class="w-6 h-6 rounded-full bg-blue-500 border-2 border-white cursor-pointer mb-2"></div>
-      <div class="w-6 h-6 rounded-full bg-black border-2 border-[#555] cursor-pointer"></div>
-    </aside>
-
-    <!-- Center Canvas -->
-    <div class="flex-1 overflow-auto p-8 flex items-center justify-center relative" style="background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 20px 20px;">
-      <div id="photo-viewport-container" class="relative"></div>
+      <button onclick="alert('Image exported successfully!')" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded">Export</button>
     </div>
 
-    <!-- Right Panels (Layers & Properties) -->
-    <aside class="w-64 bg-[#252526] border-l border-[#333] flex flex-col text-xs text-slate-300 flex-shrink-0">
-      <!-- Adjustments -->
-      <div class="p-3 border-b border-[#333]">
-        <h3 class="font-bold text-white mb-3">Adjustments</h3>
-        <div class="space-y-3">
-          <div>
-            <div class="flex justify-between mb-1"><span>Brightness</span><span id="lbl-bright">0</span></div>
-            <input type="range" id="rng-bright" min="-100" max="100" value="0" oninput="applyPhotoFilters()" class="w-full">
-          </div>
-          <div>
-            <div class="flex justify-between mb-1"><span>Contrast</span><span id="lbl-contrast">0</span></div>
-            <input type="range" id="rng-contrast" min="-100" max="100" value="0" oninput="applyPhotoFilters()" class="w-full">
-          </div>
-          <div>
-            <div class="flex justify-between mb-1"><span>Saturation</span><span id="lbl-saturate">0</span></div>
-            <input type="range" id="rng-saturate" min="-100" max="100" value="0" oninput="applyPhotoFilters()" class="w-full">
-          </div>
+    <div class="flex-1 flex overflow-hidden">
+      <!-- Left Toolbar -->
+      <aside class="w-10 bg-[#252526] border-r border-[#333] flex flex-col items-center py-1 flex-shrink-0 overflow-y-auto">
+        <div class="ps-tool-btn" title="Move Tool (V)"><i class="fa-solid fa-arrows-up-down-left-right"></i></div>
+        <div class="ps-tool-btn" title="Rectangular Marquee (M)"><i class="fa-regular fa-square"></i></div>
+        <div class="ps-tool-btn" title="Lasso Tool (L)"><i class="fa-solid fa-lasso"></i></div>
+        <div class="ps-tool-btn" title="Magic Wand Tool (W)"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        <div class="ps-tool-btn" title="Crop Tool (C)"><i class="fa-solid fa-crop-simple"></i></div>
+        <div class="ps-tool-btn" title="Eyedropper Tool (I)"><i class="fa-solid fa-eye-dropper"></i></div>
+        <div class="ps-tool-btn" title="Spot Healing Brush (J)"><i class="fa-solid fa-band-aid"></i></div>
+        <div class="ps-tool-btn active" title="Brush Tool (B)"><i class="fa-solid fa-paint-brush"></i></div>
+        <div class="ps-tool-btn" title="Clone Stamp Tool (S)"><i class="fa-solid fa-stamp"></i></div>
+        <div class="ps-tool-btn" title="History Brush Tool (Y)"><i class="fa-solid fa-clock-rotate-left"></i></div>
+        <div class="ps-tool-btn" title="Eraser Tool (E)"><i class="fa-solid fa-eraser"></i></div>
+        <div class="ps-tool-btn" title="Gradient Tool (G)"><i class="fa-solid fa-circle-half-stroke"></i></div>
+        <div class="ps-tool-btn" title="Blur Tool"><i class="fa-solid fa-droplet"></i></div>
+        <div class="ps-tool-btn" title="Dodge Tool (O)"><i class="fa-solid fa-circle-notch"></i></div>
+        <div class="ps-tool-btn" title="Pen Tool (P)"><i class="fa-solid fa-pen-nib"></i></div>
+        <div class="ps-tool-btn" title="Horizontal Type Tool (T)"><i class="fa-solid fa-t"></i></div>
+        <div class="ps-tool-btn" title="Path Selection (A)"><i class="fa-solid fa-arrow-pointer"></i></div>
+        <div class="ps-tool-btn" title="Custom Shape (U)"><i class="fa-solid fa-shapes"></i></div>
+        <div class="ps-tool-btn" title="Hand Tool (H)"><i class="fa-regular fa-hand"></i></div>
+        <div class="ps-tool-btn" title="Zoom Tool (Z)"><i class="fa-solid fa-magnifying-glass"></i></div>
+        
+        <div class="my-2 border-t border-[#444] w-6"></div>
+        <!-- Color Picker -->
+        <div class="relative w-6 h-6 mb-3 cursor-pointer">
+          <div class="absolute bottom-0 right-0 w-4 h-4 bg-white border border-[#555] rounded-sm"></div>
+          <div class="absolute top-0 left-0 w-4 h-4 bg-black border border-[#555] rounded-sm"></div>
         </div>
+      </aside>
+
+      <!-- Center Canvas -->
+      <div class="flex-1 overflow-auto flex items-center justify-center p-8 relative" style="background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 20px 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+        <div id="photo-viewport-container" class="relative shadow-[0_0_15px_rgba(0,0,0,0.5)] bg-transparent"></div>
       </div>
-      <!-- Layers -->
-      <div class="flex-1 flex flex-col">
-        <div class="p-2 border-b border-[#333] font-bold text-white flex justify-between items-center">
-          <span>Layers</span>
-          <div class="space-x-2 text-slate-400">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <i class="fa-solid fa-bars"></i>
+
+      <!-- Right Panels -->
+      <aside class="w-[280px] bg-[#252526] border-l border-[#333] flex flex-col flex-shrink-0">
+        
+        <!-- Panel 1: Color / Properties / Adjustments -->
+        <div class="h-1/2 flex flex-col border-b border-[#333]">
+          <div class="flex text-[11px] text-[#888] px-2 pt-2 bg-[#2d2d2d] border-b border-[#333]">
+            <div class="px-3 py-1 cursor-pointer">Color</div>
+            <div class="px-3 py-1 cursor-pointer">Properties</div>
+            <div class="px-3 py-1 text-[#e0e0e0] bg-[#252526] border-t border-l border-r border-[#333] rounded-t-sm font-bold">Adjustments</div>
           </div>
-        </div>
-        <div class="flex-1 overflow-y-auto p-2 space-y-1 bg-[#1e1e1e]">
-          <div class="flex items-center p-2 bg-[#37373d] rounded cursor-pointer border border-[#007fd4]">
-            <i class="fa-solid fa-eye mr-2 text-slate-300"></i>
-            <div class="w-8 h-8 bg-white/10 mr-2 rounded flex items-center justify-center overflow-hidden">
-              <img id="layer-thumb" src="" class="w-full h-full object-cover">
+          <div class="flex-1 p-3 overflow-y-auto bg-[#252526] text-xs text-[#cccccc]">
+            <div class="grid grid-cols-4 gap-2 mb-4">
+              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Brightness/Contrast"><i class="fa-solid fa-sun text-lg"></i></div>
+              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Levels"><i class="fa-solid fa-chart-simple text-lg"></i></div>
+              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Curves"><i class="fa-solid fa-chart-line text-lg"></i></div>
+              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Exposure"><i class="fa-solid fa-plus-minus text-lg"></i></div>
+              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Vibrance"><i class="fa-solid fa-v text-lg"></i></div>
+              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Hue/Saturation"><i class="fa-solid fa-palette text-lg"></i></div>
+              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Color Balance"><i class="fa-solid fa-scale-balanced text-lg"></i></div>
+              <div class="bg-[#3c3c3c] p-2 rounded text-center cursor-pointer hover:bg-[#4d4d4d]" title="Black & White"><i class="fa-solid fa-circle-half-stroke text-lg"></i></div>
             </div>
-            <span class="font-medium text-white truncate" id="layer-name">Background</span>
-          </div>
-          <div class="flex items-center p-2 hover:bg-[#2d2d30] rounded cursor-pointer">
-            <i class="fa-solid fa-eye-slash mr-2 text-slate-500"></i>
-            <div class="w-8 h-8 bg-white/10 mr-2 rounded flex items-center justify-center text-[10px]">T</div>
-            <span class="text-slate-400">Text Layer 1</span>
+            
+            <div class="space-y-3 pt-3 border-t border-[#3c3c3c]">
+              <div class="flex justify-between items-center"><span class="text-[10px]">BRIGHTNESS</span><span class="text-[10px]" id="lbl-bright">0</span></div>
+              <input type="range" id="rng-bright" min="-100" max="100" value="0" oninput="applyPhotoFilters()" class="w-full">
+              
+              <div class="flex justify-between items-center"><span class="text-[10px]">CONTRAST</span><span class="text-[10px]" id="lbl-contrast">0</span></div>
+              <input type="range" id="rng-contrast" min="-100" max="100" value="0" oninput="applyPhotoFilters()" class="w-full">
+              
+              <div class="flex justify-between items-center"><span class="text-[10px]">SATURATION</span><span class="text-[10px]" id="lbl-saturate">0</span></div>
+              <input type="range" id="rng-saturate" min="-100" max="100" value="0" oninput="applyPhotoFilters()" class="w-full">
+            </div>
           </div>
         </div>
-        <div class="p-2 border-t border-[#333] flex justify-between text-slate-400 text-sm">
-          <i class="fa-solid fa-link hover:text-white cursor-pointer"></i>
-          <i class="fa-solid fa-layer-group hover:text-white cursor-pointer"></i>
-          <i class="fa-solid fa-circle-half-stroke hover:text-white cursor-pointer"></i>
-          <i class="fa-solid fa-plus-square hover:text-white cursor-pointer"></i>
-          <i class="fa-solid fa-trash hover:text-white cursor-pointer"></i>
+        
+        <!-- Panel 2: Layers -->
+        <div class="flex-1 flex flex-col">
+          <div class="flex text-[11px] text-[#888] px-2 pt-2 bg-[#2d2d2d] border-b border-[#333]">
+            <div class="px-3 py-1 text-[#e0e0e0] bg-[#252526] border-t border-l border-r border-[#333] rounded-t-sm font-bold">Layers</div>
+            <div class="px-3 py-1 cursor-pointer">Channels</div>
+            <div class="px-3 py-1 cursor-pointer">Paths</div>
+          </div>
+          
+          <!-- Layer Tools -->
+          <div class="px-2 py-1.5 bg-[#252526] border-b border-[#333] text-[11px] text-[#ccc] flex items-center justify-between">
+            <select class="bg-[#3c3c3c] border-none outline-none rounded px-1 w-24 text-[10px]"><option>Normal</option><option>Multiply</option></select>
+            <div class="flex items-center space-x-1"><span>Opacity:</span><span class="bg-[#3c3c3c] px-1 rounded">100%</span></div>
+          </div>
+          <div class="px-2 py-1.5 bg-[#252526] border-b border-[#333] text-[11px] text-[#ccc] flex items-center space-x-3">
+            <span>Lock:</span>
+            <i class="fa-solid fa-border-all cursor-pointer hover:text-white"></i>
+            <i class="fa-solid fa-paintbrush cursor-pointer hover:text-white"></i>
+            <i class="fa-solid fa-arrows-up-down-left-right cursor-pointer hover:text-white"></i>
+            <i class="fa-solid fa-lock cursor-pointer hover:text-white"></i>
+            <div class="flex-1 flex justify-end items-center space-x-1"><span>Fill:</span><span class="bg-[#3c3c3c] px-1 rounded">100%</span></div>
+          </div>
+          
+          <!-- Layers List -->
+          <div class="flex-1 overflow-y-auto bg-[#1e1e1e] p-1 space-y-px">
+            <div class="flex items-center p-1.5 bg-[#37373d] rounded-sm cursor-pointer border border-[#007fd4]">
+              <i class="fa-solid fa-eye text-[#ccc] w-5 text-center text-xs"></i>
+              <div class="w-8 h-8 bg-white/10 mx-1 rounded-sm flex justify-center overflow-hidden border border-[#555]">
+                <img id="layer-thumb" src="" class="w-full h-full object-cover">
+              </div>
+              <span class="text-xs text-white ml-1 font-medium truncate" id="layer-name">Background</span>
+              <i class="fa-solid fa-lock text-[#888] ml-auto text-[10px]"></i>
+            </div>
+            <div class="flex items-center p-1.5 hover:bg-[#2d2d30] rounded-sm cursor-pointer">
+              <i class="fa-solid fa-eye text-[#ccc] w-5 text-center text-xs"></i>
+              <div class="w-8 h-8 bg-white/10 mx-1 rounded-sm flex items-center justify-center text-xs font-bold border border-[#555]">T</div>
+              <span class="text-xs text-[#ccc] ml-1 truncate">Title Text</span>
+            </div>
+          </div>
+          
+          <!-- Bottom Action Icons -->
+          <div class="h-8 bg-[#252526] border-t border-[#333] flex items-center justify-between px-3 text-[#aaa] text-xs">
+            <i class="fa-solid fa-link hover:text-white cursor-pointer"></i>
+            <div class="flex space-x-3">
+              <i class="fa-solid fa-layer-group hover:text-white cursor-pointer" title="Add Layer Mask"></i>
+              <i class="fa-solid fa-circle-half-stroke hover:text-white cursor-pointer" title="Create New Fill or Adjustment Layer"></i>
+              <i class="fa-solid fa-folder hover:text-white cursor-pointer" title="Create a New Group"></i>
+              <i class="fa-solid fa-plus-square hover:text-white cursor-pointer" title="Create a New Layer"></i>
+              <i class="fa-solid fa-trash hover:text-white cursor-pointer" title="Delete Layer"></i>
+            </div>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </div>
   </div>
 
   <!-- ========================================== -->
-  <!-- SCREEN 4: MOTION VIDEO ENGINE (CAPCUT UI) -->
+  <!-- SCREEN 4: MOTION CUT (FULL CAPCUT UI) -->
   <!-- ========================================== -->
-  <div id="screen-motion" class="flex-1 flex flex-col overflow-hidden hidden bg-[#0e1015]">
-    <!-- Superior: Player & Propriedades -->
-    <div class="flex-1 flex min-h-0">
+  <div id="screen-motion" class="flex-1 flex flex-col overflow-hidden hidden bg-[#14151a]">
+    
+    <!-- UPPER HALF -->
+    <div class="flex-1 flex min-h-0 border-b border-[#2a2e37]">
       
-      <!-- Player Central -->
-      <div class="flex-1 flex flex-col border-r border-[#262933]">
-        <div class="h-10 border-b border-[#262933] flex items-center justify-center text-xs text-slate-400 space-x-4">
-          <span class="text-white">Player</span>
-          <span>1920x1080</span>
-          <span>30 FPS</span>
+      <!-- Left Sidebar (Media/Effects) -->
+      <aside class="w-20 bg-[#14151a] border-r border-[#2a2e37] flex flex-col items-center pt-2 overflow-y-auto flex-shrink-0 scrollbar-hide">
+        <div class="cc-menu-item active w-full"><i class="fa-solid fa-photo-film"></i><span>Media</span></div>
+        <div class="cc-menu-item w-full"><i class="fa-solid fa-music"></i><span>Audio</span></div>
+        <div class="cc-menu-item w-full"><i class="fa-solid fa-t"></i><span>Text</span></div>
+        <div class="cc-menu-item w-full"><i class="fa-solid fa-note-sticky"></i><span>Stickers</span></div>
+        <div class="cc-menu-item w-full"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Effects</span></div>
+        <div class="cc-menu-item w-full"><i class="fa-solid fa-shuffle"></i><span>Transitions</span></div>
+        <div class="cc-menu-item w-full"><i class="fa-solid fa-camera-retro"></i><span>Filters</span></div>
+        <div class="cc-menu-item w-full"><i class="fa-solid fa-sliders"></i><span>Adjustment</span></div>
+      </aside>
+      
+      <!-- Media Pool -->
+      <aside class="w-64 bg-[#181a1f] border-r border-[#2a2e37] flex flex-col flex-shrink-0">
+        <div class="h-10 flex items-center px-4 space-x-4 border-b border-[#2a2e37]">
+          <span class="cc-tab active">Local</span>
+          <span class="cc-tab">Library</span>
         </div>
-        <div class="flex-1 flex items-center justify-center bg-black p-4 relative" id="motion-viewport-container">
-          <!-- Video Tag vai aqui -->
+        <div class="p-4 flex-1 overflow-y-auto">
+          <button onclick="triggerFileInput('motion')" class="w-full bg-[#2962ff] hover:bg-blue-600 text-white font-medium py-2 rounded mb-4 text-xs">Import</button>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-[#2a2e37] aspect-video rounded flex items-center justify-center relative group">
+              <i class="fa-solid fa-video text-slate-500"></i>
+              <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition cursor-pointer rounded"><i class="fa-solid fa-plus text-white text-xl"></i></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Player -->
+      <div class="flex-1 flex flex-col bg-[#0e1015]">
+        <div class="h-10 flex items-center justify-between px-4 text-xs text-[#8f959e] border-b border-[#2a2e37]">
+          <div class="flex space-x-4"><span>Player</span></div>
+          <div class="flex space-x-4"><span>1080P</span><span>30 FPS</span></div>
+        </div>
+        <div class="flex-1 flex items-center justify-center p-4 relative" id="motion-viewport-container">
+          <!-- Video will be here -->
         </div>
         <!-- Player Controls -->
-        <div class="h-12 bg-[#14171d] flex items-center justify-center space-x-6 text-slate-300">
-          <i class="fa-solid fa-backward-step cursor-pointer hover:text-white"></i>
-          <i class="fa-solid fa-play text-white text-xl cursor-pointer hover:text-blue-500" onclick="toggleMotionPlay()"></i>
-          <i class="fa-solid fa-forward-step cursor-pointer hover:text-white"></i>
-          <span class="text-xs font-mono" id="motion-time">00:00:00:00 / 00:00:00:00</span>
+        <div class="h-12 flex items-center justify-between px-4 text-[#8f959e] text-xs">
+          <span id="motion-time" class="font-mono">00:00:00:00 / 00:00:00:00</span>
+          <div class="flex items-center space-x-6">
+            <i class="fa-solid fa-backward-step hover:text-white cursor-pointer"></i>
+            <i class="fa-solid fa-play text-white text-xl hover:text-blue-500 cursor-pointer" onclick="toggleMotionPlay()"></i>
+            <i class="fa-solid fa-forward-step hover:text-white cursor-pointer"></i>
+          </div>
+          <i class="fa-solid fa-expand hover:text-white cursor-pointer text-sm"></i>
         </div>
       </div>
 
-      <!-- Detalhes do Clipe (Direita) -->
-      <aside class="w-72 bg-[#14171d] flex flex-col text-xs text-slate-300">
-        <div class="flex border-b border-[#262933]">
-          <button class="flex-1 py-3 text-white border-b-2 border-blue-500 font-medium">Video</button>
-          <button class="flex-1 py-3 text-slate-500 hover:text-white">Audio</button>
-          <button class="flex-1 py-3 text-slate-500 hover:text-white">Speed</button>
-          <button class="flex-1 py-3 text-slate-500 hover:text-white">Anim</button>
+      <!-- Right Properties Panel -->
+      <aside class="w-80 bg-[#181a1f] border-l border-[#2a2e37] flex flex-col flex-shrink-0 text-xs text-[#e5e6eb]">
+        <div class="flex h-10 px-2 items-end border-b border-[#2a2e37] space-x-4">
+          <span class="cc-tab active">Video</span>
+          <span class="cc-tab">Audio</span>
+          <span class="cc-tab">Speed</span>
+          <span class="cc-tab">Animation</span>
+          <span class="cc-tab">Adjustment</span>
         </div>
-        <div class="p-4 space-y-5 overflow-y-auto">
-          <!-- Transform -->
+        <!-- Sub-tabs -->
+        <div class="flex h-8 px-4 items-center bg-[#1e222b] space-x-4 text-[#8f959e] border-b border-[#2a2e37]">
+          <span class="text-white">Basic</span>
+          <span class="hover:text-white cursor-pointer">Cutout</span>
+          <span class="hover:text-white cursor-pointer">Mask</span>
+          <span class="hover:text-white cursor-pointer">Enhance</span>
+        </div>
+        <!-- Scrollable Properties -->
+        <div class="flex-1 p-4 overflow-y-auto space-y-6">
+          <!-- Scale/Position -->
           <div>
-            <div class="flex justify-between items-center mb-3">
-              <span class="font-bold text-white">Basic</span>
-              <i class="fa-solid fa-rotate-left text-slate-500"></i>
+            <div class="flex justify-between items-center mb-3"><span class="font-bold">Scale</span><i class="fa-solid fa-rotate-left text-[#5c616d]"></i></div>
+            <div class="flex items-center space-x-2">
+              <input type="range" min="0" max="200" value="100" class="flex-1 accent-blue-500">
+              <span class="w-10 text-right">100%</span>
             </div>
-            <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-4 mt-4">
               <div>
-                <div class="flex justify-between mb-1"><span>Scale</span><span class="text-white">100%</span></div>
-                <input type="range" min="0" max="200" value="100" class="w-full accent-blue-500">
-              </div>
-              <div class="flex space-x-2">
-                <div class="flex-1">
-                  <div class="flex justify-between mb-1"><span>Position X</span></div>
-                  <input type="number" value="0" class="w-full bg-[#1a1d24] border border-[#2a2e37] rounded p-1 text-white text-center">
-                </div>
-                <div class="flex-1">
-                  <div class="flex justify-between mb-1"><span>Position Y</span></div>
-                  <input type="number" value="0" class="w-full bg-[#1a1d24] border border-[#2a2e37] rounded p-1 text-white text-center">
-                </div>
+                <span class="text-[#8f959e] mb-1 block">Position X</span>
+                <div class="bg-[#14151a] border border-[#2a2e37] rounded px-2 py-1 text-center">0.00</div>
               </div>
               <div>
-                <div class="flex justify-between mb-1"><span>Rotate</span><span class="text-white">0°</span></div>
-                <input type="range" min="-180" max="180" value="0" class="w-full accent-blue-500">
+                <span class="text-[#8f959e] mb-1 block">Position Y</span>
+                <div class="bg-[#14151a] border border-[#2a2e37] rounded px-2 py-1 text-center">0.00</div>
               </div>
             </div>
+            <div class="mt-4 flex justify-between items-center mb-1"><span class="text-[#8f959e]">Rotate</span><span>0°</span></div>
+            <input type="range" min="-180" max="180" value="0" class="w-full accent-blue-500">
           </div>
           <!-- Blend -->
-          <div class="border-t border-[#262933] pt-4">
-            <span class="font-bold text-white mb-3 block">Blend</span>
-            <div class="flex justify-between mb-1"><span>Opacity</span><span class="text-white">100%</span></div>
-            <input type="range" min="0" max="100" value="100" class="w-full accent-blue-500">
+          <div class="border-t border-[#2a2e37] pt-4">
+            <div class="flex justify-between items-center mb-3"><span class="font-bold">Blend</span></div>
+            <div class="flex justify-between items-center mb-2"><span class="text-[#8f959e]">Mode</span>
+              <select class="bg-[#14151a] border border-[#2a2e37] text-white rounded px-2 py-1 outline-none"><option>Normal</option><option>Screen</option></select>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-[#8f959e] w-12">Opacity</span>
+              <input type="range" min="0" max="100" value="100" class="flex-1 accent-blue-500">
+              <span class="w-10 text-right">100%</span>
+            </div>
           </div>
         </div>
       </aside>
     </div>
 
-    <!-- Inferior: Timeline Estilo CapCut -->
-    <div class="h-64 bg-[#14171d] border-t border-[#262933] flex flex-col">
-      <!-- Toolbar da Timeline -->
-      <div class="h-10 flex items-center px-4 justify-between text-slate-300 text-xs border-b border-[#262933]">
-        <div class="flex items-center space-x-4">
-          <button class="hover:text-white" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
-          <button class="hover:text-white" title="Redo"><i class="fa-solid fa-rotate-right"></i></button>
-          <div class="w-px h-4 bg-slate-700"></div>
-          <button class="hover:text-white flex items-center space-x-1" title="Split Clip (Cmd+B)"><i class="fa-solid fa-scissors"></i> <span>Split</span></button>
-          <button class="hover:text-white flex items-center space-x-1" title="Delete"><i class="fa-solid fa-trash"></i> <span>Delete</span></button>
-          <button class="hover:text-white"><i class="fa-solid fa-clone"></i> Copy</button>
+    <!-- LOWER HALF: TIMELINE -->
+    <div class="h-64 bg-[#14151a] flex flex-col flex-shrink-0 relative">
+      <!-- Toolbar -->
+      <div class="h-10 flex items-center justify-between px-4 text-[#8f959e] text-lg border-b border-[#2a2e37]">
+        <div class="flex items-center space-x-5">
+          <i class="fa-solid fa-arrow-pointer text-white cursor-pointer" title="Select"></i>
+          <i class="fa-solid fa-hand cursor-pointer hover:text-white" title="Hand"></i>
+          <div class="w-px h-4 bg-[#2a2e37]"></div>
+          <i class="fa-solid fa-scissors cursor-pointer hover:text-white" title="Split (Cmd+B)"></i>
+          <i class="fa-solid fa-trash cursor-pointer hover:text-white" title="Delete"></i>
+          <div class="w-px h-4 bg-[#2a2e37]"></div>
+          <i class="fa-solid fa-rotate-left cursor-pointer hover:text-white" title="Undo"></i>
+          <i class="fa-solid fa-rotate-right cursor-pointer hover:text-white" title="Redo"></i>
+          <div class="w-px h-4 bg-[#2a2e37]"></div>
+          <!-- Advanced Tools -->
+          <i class="fa-solid fa-clock-rotate-left cursor-pointer hover:text-white text-sm" title="Reverse"></i>
+          <i class="fa-solid fa-object-group cursor-pointer hover:text-white text-sm" title="Mirror"></i>
+          <i class="fa-solid fa-rotate cursor-pointer hover:text-white text-sm" title="Rotate"></i>
+          <i class="fa-solid fa-crop-simple cursor-pointer hover:text-white text-sm" title="Crop"></i>
         </div>
-        <div class="flex items-center space-x-3">
-          <i class="fa-solid fa-magnifying-glass-minus"></i>
+        <div class="flex items-center space-x-3 text-sm">
+          <i class="fa-solid fa-minus cursor-pointer"></i>
           <input type="range" class="w-24 accent-blue-500">
-          <i class="fa-solid fa-magnifying-glass-plus"></i>
+          <i class="fa-solid fa-plus cursor-pointer"></i>
         </div>
       </div>
       
       <!-- Tracks Area -->
-      <div class="flex-1 overflow-auto relative">
+      <div class="flex-1 overflow-auto relative bg-[#181a1f]">
         <!-- Ruler -->
-        <div class="h-6 border-b border-[#2a2e37] bg-[#1a1d24] sticky top-0 z-10 flex">
-          <div class="w-16 flex-shrink-0 border-r border-[#2a2e37]"></div>
-          <div class="flex-1" style="background-image: linear-gradient(90deg, #333 1px, transparent 1px); background-size: 50px 100%;"></div>
-        </div>
-        
-        <!-- Track 1: Text -->
-        <div class="h-12 timeline-track flex items-center">
-          <div class="w-16 h-full flex-shrink-0 border-r border-[#2a2e37] flex items-center justify-center text-slate-500"><i class="fa-solid fa-t"></i></div>
-          <div class="relative flex-1 h-full py-1 px-4"></div>
-        </div>
-        
-        <!-- Track 2: Video (Main) -->
-        <div class="h-16 timeline-track flex items-center bg-[#1e222b]">
-          <div class="w-16 h-full flex-shrink-0 border-r border-[#2a2e37] flex flex-col items-center justify-center text-slate-500 space-y-1">
-            <i class="fa-solid fa-video text-white"></i>
-            <i class="fa-solid fa-eye text-[10px]"></i>
-          </div>
-          <div class="relative flex-1 h-full py-2 px-4" id="timeline-video-track">
-            <!-- Clipe inserido dinamicamente -->
+        <div class="h-6 border-b border-[#2a2e37] bg-[#14151a] sticky top-0 z-10 flex">
+          <div class="w-20 flex-shrink-0 border-r border-[#2a2e37]"></div>
+          <div class="flex-1" style="background-image: linear-gradient(90deg, #333 1px, transparent 1px); background-size: 50px 100%;">
+            <div class="text-[10px] text-[#5c616d] ml-1 mt-1 absolute" style="left:80px">00:00</div>
+            <div class="text-[10px] text-[#5c616d] ml-1 mt-1 absolute" style="left:180px">00:05</div>
+            <div class="text-[10px] text-[#5c616d] ml-1 mt-1 absolute" style="left:280px">00:10</div>
           </div>
         </div>
         
-        <!-- Track 3: Audio -->
-        <div class="h-14 timeline-track flex items-center">
-          <div class="w-16 h-full flex-shrink-0 border-r border-[#2a2e37] flex flex-col items-center justify-center text-slate-500 space-y-1">
-            <i class="fa-solid fa-music"></i>
+        <!-- Track 1: Video (Main) -->
+        <div class="h-20 border-b border-[#14151a] flex items-center bg-[#1e222b]">
+          <div class="w-20 h-full flex-shrink-0 border-r border-[#2a2e37] flex flex-col items-center justify-center text-[#5c616d] space-y-2 bg-[#14151a]">
+            <i class="fa-solid fa-video text-white text-sm"></i>
+            <div class="flex space-x-2 text-[10px]"><i class="fa-solid fa-eye text-white hover:text-blue-500 cursor-pointer"></i><i class="fa-solid fa-lock hover:text-white cursor-pointer"></i></div>
           </div>
-          <div class="relative flex-1 h-full py-2 px-4"></div>
+          <div class="relative flex-1 h-full py-2 px-2" id="timeline-video-track">
+            <!-- Dynamic Clip -->
+          </div>
+        </div>
+        
+        <!-- Track 2: Audio -->
+        <div class="h-16 border-b border-[#14151a] flex items-center bg-[#181a1f]">
+          <div class="w-20 h-full flex-shrink-0 border-r border-[#2a2e37] flex flex-col items-center justify-center text-[#5c616d] space-y-2 bg-[#14151a]">
+            <i class="fa-solid fa-music text-sm"></i>
+            <div class="flex space-x-2 text-[10px]"><i class="fa-solid fa-volume-high hover:text-white cursor-pointer"></i><i class="fa-solid fa-lock hover:text-white cursor-pointer"></i></div>
+          </div>
+          <div class="relative flex-1 h-full py-1 px-2"></div>
         </div>
 
-        <!-- Playhead Line -->
-        <div class="absolute top-0 bottom-0 left-32 w-px bg-white z-20 pointer-events-none">
-          <div class="absolute -top-3 -left-1.5 w-3 h-4 bg-white rounded-sm"></div>
+        <!-- Playhead -->
+        <div class="absolute top-0 bottom-0 left-[180px] w-px bg-white z-20 pointer-events-none">
+          <div class="absolute top-0 -left-[4px] w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-white"></div>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    const AppState = {
-      activeEngine: 'home',
-      currentPdfFile: null,
-      currentPhotoFile: null,
-      currentMotionFile: null,
-      recentFiles: []
-    };
-
+    const AppState = { activeEngine: 'home', currentPdfFile: null, currentPhotoFile: null, currentMotionFile: null, recentFiles: [] };
     window.addEventListener('DOMContentLoaded', () => { renderRecentList(); });
 
     function showHomeScreen() { switchEngine('home'); }
@@ -365,7 +487,6 @@
         addFileToRecent(fileName, 'motion', 'Video Clip', fileSize);
         switchEngine('motion');
       } else {
-        // PDF REAL
         AppState.currentPdfFile = { name: fileName, url: fileUrl };
         addFileToRecent(fileName, 'pdf', 'PDF Document', fileSize);
         switchEngine('pdf');
@@ -373,14 +494,8 @@
       e.target.value = '';
     }
 
-    function addFileToRecent(name, type, sub, size) {
-      AppState.recentFiles.unshift({ id: Date.now(), name, type, sub, size, date: 'Just now' });
-      renderRecentList();
-    }
-
-    function clearAllRecentFiles() {
-      if(confirm('Limpar lista de recentes?')) { AppState.recentFiles = []; renderRecentList(); }
-    }
+    function addFileToRecent(name, type, sub, size) { AppState.recentFiles.unshift({ id: Date.now(), name, type, sub, size, date: 'Just now' }); renderRecentList(); }
+    function clearAllRecentFiles() { if(confirm('Clear all recent files?')) { AppState.recentFiles = []; renderRecentList(); } }
 
     function renderRecentList() {
       const container = document.getElementById('recent-list-container');
@@ -400,29 +515,24 @@
       }).join('');
     }
 
-    // PDF REAL (Usando embed/iframe)
     function renderPdfViewport() {
       const container = document.getElementById('pdf-viewport-container');
       if (!AppState.currentPdfFile) {
-        container.innerHTML = `<div class="flex-1 flex flex-col items-center justify-center text-slate-400 bg-[#2d3239] rounded shadow-inner"><i class="fa-solid fa-file-pdf text-4xl mb-4"></i><p>Abra um arquivo PDF do seu computador para começar.</p><button onclick="triggerFileInput('pdf')" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Abrir Arquivo</button></div>`;
+        container.innerHTML = `<div class="flex-1 flex flex-col items-center justify-center text-slate-400 bg-[#2d3239] rounded shadow-inner"><i class="fa-solid fa-file-pdf text-4xl mb-4"></i><p>Abra um arquivo PDF do seu computador</p><button onclick="triggerFileInput('pdf')" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Abrir Arquivo</button></div>`;
         return;
       }
-      document.getElementById('tab-pdf-name').textContent = AppState.currentPdfFile.name;
-      // Usando iFrame para renderizar o PDF real do usuário no navegador!
-      container.innerHTML = `<iframe src="${AppState.currentPdfFile.url}#view=FitH" class="w-full h-full border-0 rounded-lg shadow-2xl bg-white"></iframe>`;
+      container.innerHTML = `<iframe src="${AppState.currentPdfFile.url}#view=FitH" class="w-full h-full border-0 rounded shadow-2xl bg-white"></iframe>`;
     }
 
-    // PHOTO VIEWPORT (Com Layers e Filtros css basicos)
     function renderPhotoViewport() {
       const container = document.getElementById('photo-viewport-container');
       if (!AppState.currentPhotoFile) {
-        container.innerHTML = `<div class="text-center text-slate-400"><p>Nenhuma imagem</p><button onclick="triggerFileInput('photo')" class="mt-4 bg-cyan-600 text-white px-4 py-2 rounded">Importar Foto</button></div>`;
+        container.innerHTML = `<div class="text-center text-[#888]"><p>Nenhuma imagem</p><button onclick="triggerFileInput('photo')" class="mt-4 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded">Importar Foto</button></div>`;
         return;
       }
-      document.getElementById('tab-photo-name').textContent = AppState.currentPhotoFile.name;
       document.getElementById('layer-name').textContent = AppState.currentPhotoFile.name;
       document.getElementById('layer-thumb').src = AppState.currentPhotoFile.url;
-      container.innerHTML = `<img id="active-photo-img" src="${AppState.currentPhotoFile.url}" class="max-w-full max-h-[80vh] shadow-2xl border border-[#444] rounded">`;
+      container.innerHTML = `<img id="active-photo-img" src="${AppState.currentPhotoFile.url}" class="max-w-full max-h-full object-contain shadow-[0_0_20px_rgba(0,0,0,0.8)] border border-[#444]">`;
     }
 
     function applyPhotoFilters() {
@@ -431,47 +541,56 @@
       const b = document.getElementById('rng-bright').value;
       const c = document.getElementById('rng-contrast').value;
       const s = document.getElementById('rng-saturate').value;
-      
       document.getElementById('lbl-bright').textContent = b;
       document.getElementById('lbl-contrast').textContent = c;
       document.getElementById('lbl-saturate').textContent = s;
-
-      // CSS Filters mapped correctly (-100 to 100) -> (0 to 200%)
       const bright = parseInt(b) + 100;
       const cont = parseInt(c) + 100;
       const sat = parseInt(s) + 100;
-      
       img.style.filter = `brightness(${bright}%) contrast(${cont}%) saturate(${sat}%)`;
     }
 
-    // MOTION VIEWPORT
     function renderMotionViewport() {
       const container = document.getElementById('motion-viewport-container');
       const track = document.getElementById('timeline-video-track');
       
       if (!AppState.currentMotionFile) {
-        container.innerHTML = `<div class="text-center text-slate-500"><i class="fa-solid fa-film text-4xl mb-4 text-slate-700"></i><p>Importe mídia para começar a editar</p><button onclick="triggerFileInput('motion')" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold">Importar Arquivo</button></div>`;
+        container.innerHTML = `<div class="text-center text-[#5c616d]"><p>Importe mídia para começar</p><button onclick="triggerFileInput('motion')" class="mt-4 bg-[#2962ff] hover:bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold">Importar Arquivo</button></div>`;
         track.innerHTML = '';
         return;
       }
-      document.getElementById('tab-motion-name').textContent = AppState.currentMotionFile.name;
-      container.innerHTML = `<video id="motion-vid" src="${AppState.currentMotionFile.url}" class="max-w-full max-h-full"></video>`;
+      container.innerHTML = `<video id="motion-vid" src="${AppState.currentMotionFile.url}" class="max-w-full max-h-full object-contain"></video>`;
       
-      // Criar clipe fictício na timeline
       track.innerHTML = `
-        <div class="h-full timeline-clip flex items-center px-2 text-[10px] font-bold overflow-hidden cursor-pointer" style="width: 60%;">
-          <div class="h-full w-2 bg-white/20 mr-2 rounded-sm cursor-ew-resize"></div> <!-- Puxador de trim -->
-          <span class="truncate flex-1">${AppState.currentMotionFile.name}</span>
-          <div class="h-full w-2 bg-white/20 ml-2 rounded-sm cursor-ew-resize"></div>
+        <div class="h-full bg-[#3b82f6] border border-[#60a5fa] rounded overflow-hidden flex flex-col relative group cursor-pointer" style="width: 70%; margin-left: 20px;">
+          <div class="flex-1 flex overflow-hidden">
+            <!-- Simulated thumbnails -->
+            <div class="w-16 h-full bg-black/20 border-r border-black/10"></div>
+            <div class="w-16 h-full bg-black/20 border-r border-black/10"></div>
+            <div class="w-16 h-full bg-black/20 border-r border-black/10"></div>
+            <div class="w-16 h-full bg-black/20 border-r border-black/10"></div>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 bg-[#1e222b]/80 text-[10px] text-white px-1 truncate border-t border-black/20">
+            ${AppState.currentMotionFile.name}
+          </div>
+          <!-- Trimming handles -->
+          <div class="absolute top-0 bottom-0 left-0 w-2 bg-white/50 cursor-ew-resize hidden group-hover:block rounded-l"></div>
+          <div class="absolute top-0 bottom-0 right-0 w-2 bg-white/50 cursor-ew-resize hidden group-hover:block rounded-r"></div>
         </div>
       `;
     }
 
     function toggleMotionPlay() {
       const vid = document.getElementById('motion-vid');
+      const icon = document.querySelector('.fa-play, .fa-pause');
       if(!vid) return;
-      if(vid.paused) vid.play();
-      else vid.pause();
+      if(vid.paused) {
+        vid.play();
+        icon.classList.replace('fa-play', 'fa-pause');
+      } else {
+        vid.pause();
+        icon.classList.replace('fa-pause', 'fa-play');
+      }
     }
   </script>
 </body>
